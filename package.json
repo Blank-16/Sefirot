@@ -1,0 +1,15 @@
+{
+  "name": "sefirot-frontend-assets",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "frontend:build": "node scripts/build-frontend.mjs"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "4.1.10",
+    "tailwindcss": "4.1.10",
+    "@xterm/xterm": "5.5.0",
+    "@xterm/addon-fit": "0.10.0",
+    "mathjax-full": "3.2.2"
+  }
+}

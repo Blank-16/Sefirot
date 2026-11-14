@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Welcome to SEFIROT</title>
+<style>body{font:16px/1.65 system-ui,sans-serif;max-width:760px;margin:3rem auto;padding:0 1.25rem;color:#e4e4e7;background:#09090b}h1,h2{color:#fafafa}a{color:#a5b4fc}.demo{border:1px solid #3f3f46;border-radius:12px;padding:1rem;background:#18181b}.demo input{padding:.6rem;background:#09090b;color:white;border:1px solid #52525b;border-radius:6px;width:7rem}.demo button{padding:.6rem .9rem;border-radius:6px;border:0;background:#6366f1;color:white;cursor:pointer}.result{font-size:1.5rem;font-weight:700}</style></head><body>
+<h1>Welcome to SEFIROT</h1><p><strong>The Archive</strong> — a local-first space to capture, connect, and retrieve knowledge.</p><p>Your notes are real HTML files stored in this installation’s vault directory, with a SQLite FTS5 index for fast search.</p>
+<h2>Wiki-links</h2><p>Open or create <a href="#" class="wiki-link" data-wikilink="sandbox-demo">sandbox-demo</a> from this link.</p>
+<h2>HTML and JavaScript are first-class</h2><p>This calculator runs directly inside the isolated preview frame:</p>
+<div class="demo"><label>First number <input id="a" type="number" value="12"></label> <label>Second number <input id="b" type="number" value="30"></label> <button id="add">Add</button><p class="result" id="result">42</p></div>
+<h2>Quick start</h2><ul><li>Create notes and folders from the left sidebar.</li><li>Use <code>[[Page Name]]</code> for wiki-links in Markdown mode.</li><li>Switch to Raw HTML to author complete documents.</li><li>Search with <kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>K</kbd>.</li></ul>
+<script>document.getElementById('add').addEventListener('click',()=>{const a=Number(document.getElementById('a').value)||0;const b=Number(document.getElementById('b').value)||0;document.getElementById('result').textContent=String(a+b)});</script>
+</body></html>

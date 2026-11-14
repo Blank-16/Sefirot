@@ -1,0 +1,17 @@
+/index.db
+/index.db-shm
+/index.db-wal
+/sefirot
+/sefirot.exe
+/backend/backend
+/html-vault
+/settings.json
+
+/dist/
+/desktop/node_modules/
+/desktop/src-tauri/target/
+/desktop/src-tauri/binaries/sefirot-server-*
+
+/node_modules/
+/backend/web/tailwind.css
+/backend/web/vendor/
