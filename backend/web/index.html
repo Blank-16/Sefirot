@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en" class="h-full bg-zinc-950">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>SEFIROT — The Archive</title>
+  <meta name="application-name" content="SEFIROT">
+  <meta name="description" content="A local-first personal knowledge archive with connected notes and AI-assisted recall.">
+  <link rel="icon" type="image/svg+xml" href="/brand.svg">
+  <link rel="stylesheet" href="/tailwind.css" onerror="this.onerror=null;const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4';document.head.appendChild(s)">
+  <style>
+    :root{color-scheme:dark}*{box-sizing:border-box}body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    button,input,textarea{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.45}
+    .math-insert,.math-symbol{border:1px solid #3f3f46;border-radius:5px;padding:3px 7px;font-size:10px;color:#a1a1aa}.math-insert:hover,.math-symbol:hover{background:#27272a;color:#fafafa}.math-symbol{min-width:25px}
+    .icon-btn{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:7px;color:#a1a1aa}.icon-btn:hover{background:#27272a;color:#fafafa}
+    .tree-row{display:flex;align-items:center;gap:7px;width:100%;padding:5px 8px;border-radius:6px;color:#a1a1aa;text-align:left;font-size:13px}.tree-row:hover{background:#18181b;color:#e4e4e7}.tree-row.active{background:#27272a;color:#fafafa}.tree-row .actions{margin-left:auto;display:none}.tree-row:hover .actions{display:flex}
+    .tree-children{margin-left:13px;border-left:1px solid #27272a;padding-left:5px}.pane{min-width:0;min-height:0}.editor{resize:none;outline:none;tab-size:2;line-height:1.75;white-space:pre;overflow:auto}.editor::selection{background:#3f3f46}
+    .search-mark mark{background:#854d0e;color:#fef3c7;border-radius:2px;padding:0 2px}.status-dot{width:6px;height:6px;border-radius:99px;background:#22c55e;display:inline-block}
+    #preview{width:100%;height:100%;border:0;background:#09090b}.hidden-pane{display:none!important}.split-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+    #graphCanvas{display:block} .graph-edge{stroke:#52525b;stroke-opacity:.48;stroke-width:1.25} .graph-edge[data-relation~="depends-on"]{stroke:#818cf8;stroke-dasharray:4 3}.graph-edge[data-relation~="contradicts"]{stroke:#f87171;stroke-dasharray:2 3}.graph-edge[data-relation~="implements"]{stroke:#34d399}.graph-edge[data-relation~="extends"]{stroke:#fbbf24} .graph-node{cursor:pointer} .graph-node circle{stroke-width:1.5} .graph-node text{font-size:11px;pointer-events:none;fill:#a1a1aa} .graph-node.selected text{fill:#fff;font-weight:600} html[data-theme="light"] #graphCanvasWrap{background:#f7f6f2} html[data-theme="light"] .graph-node text{fill:#575650} html[data-theme="light"] .graph-node.selected text{fill:#111} html[data-theme="light"] .graph-edge{stroke:#a8a59b} .modal-backdrop{background:#0009;backdrop-filter:blur(4px)}.kbd{border:1px solid #3f3f46;background:#18181b;border-radius:4px;padding:1px 5px;font-size:10px;color:#a1a1aa}
+    /* Dark theme uses true black; light theme uses warm off-white. */
+    html[data-theme="dark"] body,html[data-theme="dark"] .bg-zinc-950{background:#000!important;color:#f5f5f5!important}
+    html[data-theme="dark"] .bg-zinc-900{background:#090909!important}
+    html[data-theme="dark"] .bg-zinc-800{background:#171717!important}
+    html[data-theme="dark"] .border-zinc-800,html[data-theme="dark"] .border-zinc-700{border-color:#242424!important}
+    html[data-theme="dark"] #preview{background:#000}
+    /* Light theme: warm off-white surfaces, near-black typography. */
+    html[data-theme="light"]{color-scheme:light}
+    html[data-theme="light"] body,html[data-theme="light"] .bg-zinc-950{background:#f7f6f2!important;color:#111!important}
+    html[data-theme="light"] .bg-zinc-900{background:#eeede8!important}
+    html[data-theme="light"] .bg-zinc-800{background:#e5e3dc!important}
+    html[data-theme="light"] .border-zinc-800,html[data-theme="light"] .border-zinc-700{border-color:#dedcd4!important}
+    html[data-theme="light"] .text-zinc-100,html[data-theme="light"] .text-zinc-200,html[data-theme="light"] .text-zinc-300{color:#171717!important}
+    html[data-theme="light"] .text-zinc-400{color:#525252!important}
+    html[data-theme="light"] .text-zinc-500,html[data-theme="light"] .text-zinc-600{color:#73716a!important}
+    html[data-theme="light"] .hover\:bg-zinc-800:hover,html[data-theme="light"] .hover\:bg-zinc-900:hover{background:#e5e3dc!important}
+    html[data-theme="light"] .tree-row{color:#575650}
+    html[data-theme="light"] .tree-row:hover,html[data-theme="light"] .tree-row.active{background:#e8e6df;color:#111}
+    html[data-theme="light"] .tree-children{border-color:#dedcd4}
+    html[data-theme="light"] .editor{background:#fbfaf7!important;color:#171717!important}
+    html[data-theme="light"] input,html[data-theme="light"] select,html[data-theme="light"] textarea{color:#171717}
+    html[data-theme="light"] #preview{background:#fbfaf7}
+    html[data-theme="light"] #graphCanvas{display:block} html[data-theme="light"] #graphCanvasWrap{background:#f7f6f2} html[data-theme="light"] .graph-node text{fill:#575650} html[data-theme="light"] .graph-node.selected text{fill:#111} html[data-theme="light"] .graph-edge{stroke:#a8a59b} .modal-backdrop{background:#0005}
+    html[data-theme="light"] .kbd{background:#eeede8;border-color:#d5d2c9;color:#575650}
+    html[data-theme="light"] .math-insert,html[data-theme="light"] .math-symbol{border-color:#d5d2c9;color:#575650}html[data-theme="light"] .math-insert:hover,html[data-theme="light"] .math-symbol:hover{background:#e5e3dc;color:#111}
+    html[data-theme="light"] .icon-btn{color:#575650}
+    html[data-theme="light"] .icon-btn:hover{background:#e5e3dc;color:#111}
+    @media(max-width:900px){#leftSidebar{width:220px}#rightSidebar{width:190px}}@media(max-width:700px){#leftSidebar{position:absolute;z-index:20;inset:48px auto 0 0;width:260px;box-shadow:20px 0 40px #0008}#rightSidebar{display:none}.split-grid{grid-template-columns:minmax(0,1fr)}}
+  </style>
+  <link rel="stylesheet" href="/visual-system.css">
+</head>
+<body class="h-full overflow-hidden bg-zinc-950 text-zinc-100">
+<div class="flex h-screen flex-col">
+  <header class="app-topbar">
+    <div class="topbar-brand">
+      <button id="mobileMenu" class="icon-btn mobile-menu" title="Toggle vault index" aria-label="Toggle vault index" aria-controls="leftSidebar" aria-expanded="false">☰</button>
+      <button id="homeOpen" class="brand-home" title="Open archive home">
+        <img src="/brand.svg" alt="" class="brand-mark">
+        <span class="brand-word">SEFIROT</span>
+        <span class="brand-divider"></span>
+        <span class="brand-title">The Archive</span>
+      </button>
+    </div>
+    <div class="topbar-actions">
+      <span id="globalStatus" class="global-status">All changes stored locally</span>
+      <button id="topSearch" class="search-trigger" aria-label="Search notes"><span class="search-glyph">⌕</span><span>Search the archive</span><span class="kbd">Ctrl K</span></button>
+      <button id="researchOpen" class="top-action">Papers</button>
+      <button id="graphOpen" class="top-action">Graph</button>
+      <details class="tool-menu">
+        <summary aria-label="More archive tools">Tools <span class="tool-menu-mark">⌄</span></summary>
+        <div class="tool-menu-popover">
+          <button id="terminalOpen">Terminal</button>
+          <button id="aiContextCopy">Copy archive context</button>
+          <button id="trashOpen">Trash</button>
+          <div class="tool-menu-rule"></div>
+          <button id="backupExport">Export vault…</button>
+          <button id="backupImport">Import vault…</button>
+          <input id="importInput" type="file" accept=".zip,application/zip" class="hidden">
+        </div>
+      </details>
+      <button id="themeToggle" class="icon-btn theme-toggle" title="Toggle theme" aria-label="Toggle theme">◐</button>
+    </div>
+  </header>
+  <nav id="tabBar" class="hidden h-9 shrink-0 items-center gap-1 overflow-x-auto border-b border-zinc-800 bg-zinc-950 px-2"></nav>
+  <div class="flex min-h-0 flex-1">
+    <aside id="leftSidebar" class="pane vault-sidebar">
+      <div class="vault-sidebar-head">
+        <div class="vault-heading"><span>Your vault</span><button id="refreshTree" class="icon-btn" title="Refresh index" aria-label="Refresh index">↻</button></div>
+        <div class="vault-create-actions"><button id="newNote" class="primary-action">＋ New note</button><button id="newFolder" class="secondary-action">＋ Folder</button></div>
+      </div>
+      <div class="file-index-heading"><span>All notes</span><span id="fileCount">0 notes</span></div>
+      <div id="fileTree" class="file-index"><div class="px-2 py-3 text-xs text-zinc-600">Loading vault…</div></div>
+      <div class="vault-location"><span>Vault directory</span><span id="vaultPathLabel" title="Active vault">Active vault</span></div>
+    </aside>
+
+    <main class="pane app-main">
+      <div id="documentToolbar" class="document-toolbar">
+        <div class="document-location"><span class="location-glyph">◈</span><span id="breadcrumb" class="truncate">No note selected</span></div>
+        <div class="document-controls">
+          <div class="view-switch" role="group" aria-label="Document view"><button data-view="edit" class="view-btn">Edit</button><button data-view="split" class="view-btn">Split</button><button data-view="preview" class="view-btn">Read</button></div>
+          <select id="authorMode" aria-label="Document format"><option value="markdown">Markdown</option><option value="html">Raw HTML</option></select>
+          <span id="saveStatus" class="save-status">Saved</span>
+          <button id="toggleRight" class="icon-btn context-toggle" title="Toggle note details" aria-label="Toggle note details">▤</button>
+        </div>
+      </div>
+      <section id="homeView" class="home-view hidden min-h-0 flex-1 overflow-y-auto">
+        <div class="home-shell">
+          <section class="home-intro">
+            <div class="home-mark-wrap"><img src="/brand.svg" alt="SEFIROT archive emblem" class="home-mark"></div>
+            <div class="home-intro-copy">
+              <p class="home-kicker">A private place for connected ideas</p>
+              <h1>The Archive</h1>
+              <p class="home-description">Write things down. Link what belongs together. Return when the context matters.</p>
+              <div class="home-actions"><button id="homeNewNote" class="primary-action">＋ New note</button><button id="homeGraph" class="secondary-action">Explore connections</button><button id="homeTerminal" class="text-action">Open terminal</button></div>
+            </div>
+          </section>
+          <div class="home-content-grid">
+            <section class="home-recent-section">
+              <header class="section-heading"><div><h2>Recently updated</h2><p>Your notes, in the order they changed.</p></div><span id="homeRecentCount" class="section-count"></span></header>
+              <div id="homeRecent" class="recent-index"><div class="recent-empty">Loading documents…</div></div>
+            </section>
+            <aside class="home-agent-section">
+              <header class="section-heading"><div><h2>Agent activity</h2><p>Local tool sessions</p></div></header>
+              <div id="homeAgentRuns" class="agent-index"><div class="recent-empty">No agent sessions yet.</div></div>
+              <section id="homeIntegritySection" class="home-integrity hidden"><header class="section-heading"><div><h2>Needs attention</h2><p>Links and notes worth a look</p></div></header><div id="homeIntegrity" class="agent-index"></div></section>
+              <div class="home-footnote"><span class="status-dot"></span><span>Your files stay in your vault.</span></div>
+            </aside>
+          </div>
+        </div>
+      </section>
+      <div id="emptyState" class="empty-workspace">
+        <div class="empty-mark"><img src="/brand.svg" alt="SEFIROT emblem"></div>
+        <p class="empty-kicker">Your vault is ready</p>
+        <h1>Begin with a note.</h1>
+        <p class="empty-description">A thought, a reference, a question worth keeping. Start anywhere; connections can come later.</p>
+        <button id="emptyNewNote" class="primary-action">＋ Create a note</button>
+      </div>
+      <section id="graphView" class="hidden min-h-0 flex-1 flex-col">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-800 px-4 py-3"><div><div class="text-sm font-medium">Knowledge graph</div><p class="mt-0.5 text-[11px] text-zinc-500">Explore notes and their wiki-link relationships. Select a node to inspect its summary and neighbors.</p></div><div class="flex items-center gap-2"><input id="graphSearch" class="w-36 rounded-md border border-zinc-800 bg-zinc-900 px-2.5 py-1.5 text-xs outline-none" placeholder="Find notes or tags…"><select id="graphScope" class="rounded-md border border-zinc-800 bg-zinc-900 px-2 py-1.5 text-[11px] text-zinc-400"><option value="global">Global</option><option value="local">Local graph</option></select><button id="graphZoomOut" class="rounded-md border border-zinc-800 px-2.5 py-1.5 text-xs text-zinc-400" title="Zoom out">−</button><button id="graphZoomIn" class="rounded-md border border-zinc-800 px-2.5 py-1.5 text-xs text-zinc-400" title="Zoom in">+</button><button id="graphReset" class="rounded-md border border-zinc-800 px-2.5 py-1.5 text-xs text-zinc-400">Reset view</button><button id="graphClose" class="rounded-md border border-zinc-800 px-2.5 py-1.5 text-xs text-zinc-400">Back to note</button></div></div>
+        <div class="flex min-h-0 flex-1"><div id="graphCanvasWrap" class="relative min-w-0 flex-1 overflow-hidden bg-zinc-950"><svg id="graphCanvas" class="h-full w-full" role="img" aria-label="Interactive note relationship graph"></svg><div class="absolute bottom-3 left-3 rounded-lg border border-zinc-800 bg-zinc-900/90 px-3 py-2 text-[10px] text-zinc-500">● Selected　● Connected　● Other notes</div></div><aside class="w-64 shrink-0 overflow-y-auto border-l border-zinc-800 p-4"><div class="text-[10px] font-semibold uppercase tracking-widest text-zinc-500">Selected document</div><h2 id="graphNodeTitle" class="mt-2 break-words text-sm font-semibold">Select a node</h2><p id="graphNodePath" class="mt-1 break-all text-[10px] text-zinc-500"></p><p id="graphNodeSummary" class="mt-3 text-xs leading-5 text-zinc-400">A short document summary will appear here.</p><div id="graphNodeTags" class="mt-3 flex flex-wrap gap-1"></div><button id="graphOpenNote" class="mt-4 w-full rounded-md bg-indigo-500 px-3 py-2 text-xs font-medium text-white">Open document</button><div class="mt-6 border-t border-zinc-800 pt-4"><div class="mb-2 text-[10px] font-semibold text-zinc-500">Connected documents</div><div id="graphNeighbors" class="space-y-1 text-xs text-zinc-400">No node selected.</div></div></aside></div>
+      </section>
+      <section id="workspace" class="hidden min-h-0 flex-1 flex-col">
+        <div id="panes" class="min-h-0 flex-1 split-grid">
+          <div id="editorPane" class="pane flex min-h-0 flex-col border-r border-zinc-800">
+            <div class="editor-bar">
+              <div class="editor-bar-label"><span>Source</span><span id="editorModeLabel" class="editor-source-mode">Markdown source</span></div>
+              <div class="editor-bar-actions">
+                <select id="documentTemplate" aria-label="Insert scientific document template" class="research-tool hidden"><option value="">Insert template…</option><option value="paper">Research paper</option><option value="review">Literature review</option><option value="math">Mathematical notes</option><option value="lab">Laboratory report</option></select>
+                <button id="mathMacroManage" type="button" class="research-tool hidden">Macros</button>
+                <button id="researchModeToggle" type="button" aria-pressed="false" title="Show scientific authoring tools for this document" class="research-mode-toggle">Enable research mode</button>
+              </div>
+            </div>
+            <div id="mathToolbar" class="math-toolbar hidden shrink-0 flex-col gap-1">
+              <div class="flex flex-wrap items-center gap-1"><span class="mr-1 text-[9px] text-zinc-600">Insert</span><button type="button" data-math="\(|\)" class="math-insert">Inline</button><button type="button" data-math="\[\n|\n\]" class="math-insert">Display</button><button type="button" data-math="\[\n\begin{aligned}\n|x &= y + z \\\n\end{aligned}\n\]" class="math-insert">Aligned</button><button type="button" data-math="\[\n\begin{bmatrix}|a & b \\\n c & d\end{bmatrix}\n\]" class="math-insert">Matrix</button><button type="button" data-math="\(\frac{|}{b}\)" class="math-insert">Fraction</button><button type="button" data-math="\(\sum_{i=1}^{n} x_i\)" class="math-insert">Σ</button><button type="button" data-math="\(\int_{a}^{b} f(x)\,dx\)" class="math-insert">∫</button><button type="button" data-math="\(\nabla \cdot \mathbf{F}\)" class="math-insert">∇</button><button type="button" data-math="\(\ket{\psi}\)" class="math-insert">Quantum</button><button type="button" data-math="\(\ce{H2O -> H+ + OH-}\)" class="math-insert">Chemistry</button></div>
+              <div class="flex flex-wrap items-center gap-1"><input id="mathSymbolSearch" type="search" placeholder="Find symbol…" aria-label="Search mathematical symbols" class="w-28 rounded border border-zinc-800 bg-zinc-900 px-2 py-1 text-[10px] text-zinc-300"><div id="mathSymbolPalette" class="flex flex-wrap gap-1">
+                <button type="button" data-symbol="\alpha" title="alpha" class="math-symbol">α</button><button type="button" data-symbol="\beta" title="beta" class="math-symbol">β</button><button type="button" data-symbol="\gamma" title="gamma" class="math-symbol">γ</button><button type="button" data-symbol="\Delta" title="Delta" class="math-symbol">Δ</button><button type="button" data-symbol="\Omega" title="Omega" class="math-symbol">Ω</button><button type="button" data-symbol="\partial" title="partial derivative" class="math-symbol">∂</button><button type="button" data-symbol="\nabla" title="nabla gradient" class="math-symbol">∇</button><button type="button" data-symbol="\hbar" title="reduced Planck constant" class="math-symbol">ℏ</button><button type="button" data-symbol="\otimes" title="tensor product" class="math-symbol">⊗</button><button type="button" data-symbol="\mathbb{R}" title="real numbers" class="math-symbol">ℝ</button><button type="button" data-symbol="\mathcal{L}" title="Lagrangian" class="math-symbol">ℒ</button><button type="button" data-symbol="\infty" title="infinity" class="math-symbol">∞</button><button type="button" data-symbol="\forall" title="for all" class="math-symbol">∀</button><button type="button" data-symbol="\exists" title="there exists" class="math-symbol">∃</button><button type="button" data-symbol="\approx" title="approximately" class="math-symbol">≈</button><button type="button" data-symbol="\neq" title="not equal" class="math-symbol">≠</button><button type="button" data-symbol="\rightarrow" title="right arrow" class="math-symbol">→</button><button type="button" data-symbol="\equiv" title="equivalent" class="math-symbol">≡</button><button type="button" data-symbol="\times" title="multiplication" class="math-symbol">×</button><button type="button" data-symbol="\cdot" title="dot product" class="math-symbol">·</button>
+              </div></div>
+            </div>
+            <textarea id="editor" class="editor min-h-0 flex-1 bg-zinc-950 px-5 pb-8 pt-3 font-mono text-[13px] text-zinc-300" spellcheck="false" placeholder="Write a note…"></textarea>
+          </div>
+          <div id="previewPane" class="pane flex min-h-0 flex-col"><div class="preview-bar"><span>Reading view</span><span>Rendered document</span></div><iframe id="preview" title="SEFIROT note preview" sandbox="allow-scripts" referrerpolicy="no-referrer"></iframe></div>
+        </div>
+      </section>
+    </main>
+
+    <aside id="rightSidebar" class="pane context-sidebar">
+      <div class="context-sidebar-head"><span>On this page</span></div>
+      <section class="context-block">
+        <h3>Summary</h3>
+        <div id="noteSummary">Select a note to see its summary.</div>
+        <p id="noteSummaryDetail"></p>
+        <div class="context-subsection"><h4>Outline</h4><div id="noteOutline"></div></div>
+      </section>
+      <section class="context-block">
+        <h3>Backlinks</h3>
+        <div id="backlinks">Select a note to see backlinks.</div>
+      </section>
+      <section class="context-block context-properties">
+        <h3>Properties</h3>
+        <dl><div><dt>Format</dt><dd id="propFormat">—</dd></div><div><dt>Type</dt><dd id="noteType">—</dd></div><div><dt>Updated</dt><dd id="noteUpdated">—</dd></div><div><dt>Path</dt><dd id="propPath">—</dd></div></dl>
+        <div id="noteTags" class="context-tags"></div>
+        <button id="historyOpen" class="history-action">Version history</button>
+      </section>
+    </aside>
+  </div>
+</div>
+
+<div id="researchOverlay" class="modal-backdrop fixed inset-0 z-[65] hidden items-center justify-center p-4"><section class="flex max-h-[88vh] w-full max-w-5xl flex-col overflow-hidden rounded-xl border border-zinc-700 bg-zinc-950 shadow-2xl"><header class="flex items-center justify-between border-b border-zinc-800 px-4 py-3"><div><strong class="text-sm">Research library</strong><p class="mt-1 text-[10px] text-zinc-500">Papers, bibliographic metadata, citations and page annotations</p></div><button id="researchClose" class="icon-btn">×</button></header><div class="grid min-h-0 flex-1 md:grid-cols-[minmax(0,1fr)_minmax(320px,1fr)]"><div class="min-h-0 overflow-y-auto border-r border-zinc-800 p-4"><div class="mb-3 flex items-center justify-between"><span class="text-[10px] text-zinc-500">Library</span><button id="researchNew" class="rounded bg-indigo-500 px-3 py-1.5 text-xs text-white">＋ Add paper</button></div><div id="researchList" class="space-y-2"></div></div><form id="researchForm" class="min-h-0 space-y-3 overflow-y-auto p-4"><input type="hidden" id="researchId"><label class="block text-xs text-zinc-500">Title<input id="researchTitle" required class="mt-1 w-full rounded border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm text-zinc-100"></label><label class="block text-xs text-zinc-500">Authors (one per line)<textarea id="researchAuthors" rows="2" class="mt-1 w-full rounded border border-zinc-800 bg-zinc-900 px-3 py-2 text-xs text-zinc-100"></textarea></label><label class="block text-xs text-zinc-500">Abstract<textarea id="researchAbstract" rows="4" class="mt-1 w-full rounded border border-zinc-800 bg-zinc-900 px-3 py-2 text-xs text-zinc-100"></textarea></label><div class="grid grid-cols-2 gap-2"><label class="text-xs text-zinc-500">DOI<input id="researchDOI" class="mt-1 w-full rounded border border-zinc-800 bg-zinc-900 px-2 py-2 text-xs text-zinc-100"></label><label class="text-xs text-zinc-500">Publication<input id="researchPublication" class="mt-1 w-full rounded border border-zinc-800 bg-zinc-900 px-2 py-2 text-xs text-zinc-100"></label><label class="text-xs text-zinc-500">Published<input id="researchPublished" placeholder="YYYY-MM-DD" class="mt-1 w-full rounded border border-zinc-800 bg-zinc-900 px-2 py-2 text-xs text-zinc-100"></label><label class="text-xs text-zinc-500">Reading status<select id="researchStatus" class="mt-1 w-full rounded border border-zinc-800 bg-zinc-900 px-2 py-2 text-xs text-zinc-100"><option value="unread">Unread</option><option value="reading">Reading</option><option value="read">Read</option><option value="archived">Archived</option></select></label></div><label class="block text-xs text-zinc-500">URL<input id="researchURL" type="url" class="mt-1 w-full rounded border border-zinc-800 bg-zinc-900 px-3 py-2 text-xs text-zinc-100"></label><label class="block text-xs text-zinc-500">Keywords (comma separated)<input id="researchKeywords" class="mt-1 w-full rounded border border-zinc-800 bg-zinc-900 px-3 py-2 text-xs text-zinc-100"></label><label class="block text-xs text-zinc-500">Personal notes<textarea id="researchNotes" rows="3" class="mt-1 w-full rounded border border-zinc-800 bg-zinc-900 px-3 py-2 text-xs text-zinc-100"></textarea></label><div class="rounded border border-zinc-800 p-3"><label class="block text-xs text-zinc-500">Attach original PDF<input id="researchPDF" type="file" accept="application/pdf,.pdf" class="mt-2 block w-full text-xs text-zinc-400"></label><button type="button" id="researchUploadPDF" class="mt-2 rounded border border-zinc-700 px-3 py-1.5 text-xs text-zinc-300">Upload PDF to local vault</button><p id="researchPDFStatus" class="mt-1 text-[10px] text-zinc-600">PDF files are stored locally, unchanged.</p></div><section class="rounded border border-zinc-800 p-3"><div class="mb-2 text-xs font-medium text-zinc-300">Citations and references</div><div id="researchCitationList" class="mb-2 space-y-1 text-[10px] text-zinc-500">Select a saved paper.</div><input id="researchCitationText" placeholder="Full citation text" class="mb-2 w-full rounded border border-zinc-800 bg-zinc-900 px-2 py-2 text-xs text-zinc-100"><input id="researchCitationLocator" placeholder="Page / section / DOI (optional)" class="mb-2 w-full rounded border border-zinc-800 bg-zinc-900 px-2 py-2 text-xs text-zinc-100"><button type="button" id="researchAddCitation" class="rounded border border-zinc-700 px-3 py-1.5 text-xs text-zinc-300">Add citation</button></section><section class="rounded border border-zinc-800 p-3"><div class="mb-2 text-xs font-medium text-zinc-300">Page annotations</div><div id="researchAnnotationList" class="mb-2 space-y-2 text-[10px] text-zinc-500">Select a saved paper.</div><div class="grid grid-cols-4 gap-2"><input id="researchAnnotationPage" type="number" min="0" placeholder="Page" class="col-span-1 rounded border border-zinc-800 bg-zinc-900 px-2 py-2 text-xs text-zinc-100"><input id="researchAnnotationQuote" placeholder="Quoted passage" class="col-span-3 rounded border border-zinc-800 bg-zinc-900 px-2 py-2 text-xs text-zinc-100"></div><textarea id="researchAnnotationNote" rows="2" placeholder="Your annotation" class="mt-2 w-full rounded border border-zinc-800 bg-zinc-900 px-2 py-2 text-xs text-zinc-100"></textarea><button type="button" id="researchAddAnnotation" class="mt-2 rounded border border-zinc-700 px-3 py-1.5 text-xs text-zinc-300">Add annotation</button></section><div class="flex justify-end gap-2"><button type="button" id="researchDelete" class="mr-auto hidden rounded border border-red-900 px-3 py-2 text-xs text-red-300">Delete</button><button type="button" id="researchReset" class="rounded border border-zinc-700 px-3 py-2 text-xs text-zinc-400">Clear</button><button type="submit" class="rounded bg-indigo-500 px-4 py-2 text-xs font-medium text-white">Save paper</button></div><div id="researchFeedback" class="text-[10px] text-zinc-500"></div></form></div></section></div>
+<div id="commandOverlay" class="modal-backdrop fixed inset-0 z-[55] hidden items-start justify-center px-4 pt-[12vh]"><div class="w-full max-w-md overflow-hidden rounded-xl border border-zinc-700 bg-zinc-900 shadow-2xl"><div class="border-b border-zinc-800 px-4"><input id="commandInput" class="h-12 w-full bg-transparent text-sm text-zinc-100 outline-none placeholder:text-zinc-600" placeholder="Run a command…"></div><div id="commandList" class="max-h-[50vh] overflow-y-auto p-2"></div></div></div>
+<div id="searchOverlay" class="modal-backdrop fixed inset-0 z-50 hidden items-start justify-center px-4 pt-[12vh]"><div class="w-full max-w-xl overflow-hidden rounded-xl border border-zinc-700 bg-zinc-900 shadow-2xl"><div class="flex items-center gap-2 border-b border-zinc-800 px-3"><span class="text-zinc-500">⌕</span><select id="searchMode" class="rounded border border-zinc-800 bg-zinc-900 px-2 py-1 text-[10px] text-zinc-400"><option value="fulltext">Full text</option><option value="semantic">Semantic</option><option value="hybrid">Hybrid</option></select><input id="searchInput" class="h-12 min-w-0 flex-1 bg-transparent text-sm text-zinc-100 outline-none placeholder:text-zinc-600" placeholder="Search · tag:systems type:concept folder:Engineering" autocomplete="off"><kbd class="kbd">ESC</kbd></div><div id="semanticStatus" class="border-b border-zinc-800 px-4 py-2 text-[10px] text-zinc-600">Checking local semantic index…</div><div id="searchResults" class="max-h-[55vh] overflow-y-auto p-2"><p class="px-3 py-4 text-xs text-zinc-600">Search titles and content, or filter with tag:, type:, and folder:.</p></div></div></div>
+<div id="terminalOverlay" class="modal-backdrop fixed inset-0 z-[60] hidden items-center justify-center p-4"><section class="flex h-[min(82vh,760px)] w-full max-w-5xl flex-col overflow-hidden rounded-xl border border-zinc-700 bg-zinc-950 shadow-2xl"><header class="flex items-center gap-3 border-b border-zinc-800 px-4 py-3"><strong class="text-sm">Terminal</strong><select id="terminalProfile" class="rounded-md border border-zinc-800 bg-zinc-900 px-2 py-1.5 text-xs text-zinc-300"><option value="shell">Shell</option><option value="wsl">WSL</option><option value="claude">Claude Code</option><option value="codex">Codex CLI</option><option value="gemini">Gemini CLI</option><option value="aider">Aider</option><option value="agy">AGY</option></select><button id="terminalStart" class="rounded-md bg-indigo-500 px-3 py-1.5 text-xs text-white">Start session</button><span id="terminalStatus" class="text-xs text-zinc-500">Not connected</span><span class="flex-1"></span><button id="terminalStop" class="rounded-md border border-zinc-700 px-2.5 py-1.5 text-xs text-zinc-400" title="End the running session">End session</button><button id="terminalClose" class="icon-btn" title="Hide terminal (session keeps running)" aria-label="Hide terminal">×</button></header><div id="terminalOutput" class="min-h-0 flex-1 bg-black p-2"></div><footer class="border-t border-zinc-800 px-4 py-2 text-[10px] text-zinc-500">Working directory: <span id="terminalCwdLabel">active vault</span> · Commands execute on this machine with your user permissions.</footer></section></div>
+<div id="promptOverlay" class="modal-backdrop fixed inset-0 z-50 hidden items-center justify-center px-4"><div class="w-full max-w-sm rounded-xl border border-zinc-700 bg-zinc-900 p-4 shadow-2xl"><h2 id="promptTitle" class="text-sm font-semibold">Create note</h2><p id="promptDescription" class="mt-1 text-xs text-zinc-500"></p><input id="promptInput" class="mt-4 w-full rounded-md border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm outline-none focus:border-indigo-500"/><div class="mt-4 flex justify-end gap-2"><button id="promptCancel" class="rounded-md px-3 py-2 text-xs text-zinc-400 hover:bg-zinc-800">Cancel</button><button id="promptConfirm" class="rounded-md bg-indigo-500 px-3 py-2 text-xs font-medium text-white hover:bg-indigo-400">Continue</button></div></div></div>
+<div id="conflictOverlay" class="modal-backdrop fixed inset-0 z-[80] hidden items-center justify-center p-4"><section class="w-full max-w-md rounded-xl border border-zinc-700 bg-zinc-900 p-5 shadow-2xl"><h2 class="text-sm font-semibold text-zinc-100">Document changed outside SEFIROT</h2><p class="mt-2 text-xs leading-5 text-zinc-400">An agent or another editor changed this file after you opened it. Reload to discard your unsaved edits, or explicitly overwrite the external version. Overwriting preserves the external version in history when it has been indexed.</p><div class="mt-5 flex justify-end gap-2"><button id="conflictReload" class="rounded-md border border-zinc-700 px-3 py-2 text-xs text-zinc-300">Reload from disk</button><button id="conflictOverwrite" class="rounded-md bg-rose-600 px-3 py-2 text-xs font-medium text-white">Overwrite external version</button></div></section></div>
+<div id="trashOverlay" class="modal-backdrop fixed inset-0 z-[70] hidden items-center justify-center p-4"><section class="flex max-h-[75vh] w-full max-w-xl flex-col overflow-hidden rounded-xl border border-zinc-700 bg-zinc-900 shadow-2xl" aria-labelledby="trashTitle"><header class="flex items-center justify-between border-b border-zinc-800 px-4 py-3"><div><strong id="trashTitle" class="text-sm">Trash</strong><p id="trashNote" class="mt-1 text-[10px] text-zinc-500">Deleted notes are kept here before permanent removal.</p></div><button id="trashClose" class="icon-btn" aria-label="Close trash">×</button></header><div id="trashList" class="min-h-0 overflow-y-auto p-3"></div></section></div>
+        <div id="historyOverlay" class="modal-backdrop fixed inset-0 z-[70] hidden items-center justify-center p-4"><section class="flex max-h-[75vh] w-full max-w-xl flex-col overflow-hidden rounded-xl border border-zinc-700 bg-zinc-900 shadow-2xl"><header class="flex items-center justify-between border-b border-zinc-800 px-4 py-3"><strong class="text-sm">Document history</strong><button id="historyClose" class="icon-btn">×</button></header><div id="historyList" class="min-h-0 overflow-y-auto p-3"><p class="text-xs text-zinc-500">Loading revisions…</p></div></section></div>
+<link rel="stylesheet" href="/vendor/xterm.css" onerror="this.onerror=null;this.href='https://cdn.jsdelivr.net/npm/@xterm/xterm@5.5.0/css/xterm.css'"><script src="/vendor/xterm.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/@xterm/xterm@5.5.0/lib/xterm.js'"></script><script src="/vendor/addon-fit.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/@xterm/addon-fit@0.10.0/lib/addon-fit.js'"></script><script src="/js/core.js" defer></script>
+<script src="/js/notes.js" defer></script>
+<script src="/js/research.js" defer></script>
+<script src="/js/references.js" defer></script>
+<script src="/js/authoring.js" defer></script>
+<script src="/js/ui.js" defer></script>
+<script src="/js/search.js" defer></script>
+<script src="/js/events.js" defer></script>
+<script src="/js/graph.js" defer></script>
+<script src="/js/history.js" defer></script>
+<script src="/js/commands.js" defer></script>
+<script src="/js/terminal.js" defer></script>
+        <script src="/js/settings.js" defer></script>
+        <script src="/js/maintenance.js" defer></script>
+</body></html>
