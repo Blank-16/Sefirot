@@ -1,0 +1,43 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "SEFIROT",
+  "version": "0.1.0",
+  "identifier": "com.sefirot.archive",
+  "build": {
+    "frontendDist": "../../backend/web",
+    "beforeBuildCommand": "npm --prefix .. run frontend:build"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "SEFIROT — The Archive",
+        "url": "boot.html",
+        "width": 1440,
+        "height": 920,
+        "minWidth": 960,
+        "minHeight": 640,
+        "center": true
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "externalBin": [
+      "binaries/sefirot-server"
+    ],
+    "category": "Productivity",
+    "shortDescription": "A local-first personal knowledge archive",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ]
+  }
+}
