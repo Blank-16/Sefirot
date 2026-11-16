@@ -1,0 +1,124 @@
+name: Cross-platform CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.25.x'
+          cache: true
+          cache-dependency-path: backend/go.mod
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build local frontend assets
+        run: npm install && npm run frontend:build
+      - name: Check formatting
+        shell: bash
+        run: test -z "$(find . -name '*.go' -not -path './vendor/*' -print0 | xargs -0 gofmt -l)"
+      - name: Verify frontend JavaScript
+        shell: bash
+        run: for file in backend/web/app.js backend/web/js/*.js; do node --check "$file"; done
+      - name: Download dependencies
+        run: cd backend && go mod tidy
+      - name: Static analysis
+        run: cd backend && go vet ./...
+      - name: Check go.sum is committed
+        shell: bash
+        run: |
+          if [ ! -f backend/go.sum ]; then echo "::warning::backend/go.sum is not committed; run 'go mod tidy' in backend/ and commit it so builds are reproducible and verified."; fi
+      - name: Test
+        run: cd backend && go test ./...
+      - name: Test with race detector
+        if: runner.os != 'Windows'
+        run: cd backend && go test -race ./...
+      - name: Build
+        run: cd backend && go build ./...
+      - name: Runtime smoke test (Unix)
+        if: runner.os != 'Windows'
+        run: bash scripts/smoke-test.sh
+      - name: Runtime smoke test (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: ./scripts/smoke-test.ps1
+
+  cross-build:
+    name: Cross-build (${{ matrix.target }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: windows/amd64
+            output: sefirot-windows-amd64.exe
+          - target: windows/arm64
+            output: sefirot-windows-arm64.exe
+          - target: linux/amd64
+            output: sefirot-linux-amd64
+          - target: linux/arm64
+            output: sefirot-linux-arm64
+          - target: darwin/amd64
+            output: sefirot-macos-amd64
+          - target: darwin/arm64
+            output: sefirot-macos-arm64
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.25.x'
+          cache: true
+          cache-dependency-path: backend/go.mod
+      - name: Build target
+        shell: bash
+        run: |
+          export GOOS="${TARGET%/*}"
+          export GOARCH="${TARGET#*/}"
+          export CGO_ENABLED=0
+          cd backend && go build -trimpath -ldflags='-s -w' -o "../${OUTPUT}" .
+        env:
+          TARGET: ${{ matrix.target }}
+          OUTPUT: ${{ matrix.output }}
+
+  browser:
+    name: Browser end-to-end
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.25.x'
+          cache: true
+          cache-dependency-path: backend/go.mod
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build frontend assets and server
+        run: |
+          npm install && npm run frontend:build
+          cd backend && go mod tidy && go build -o ../sefirot .
+      - name: Install Chromium for Playwright
+        run: pip install playwright && python -m playwright install --with-deps chromium
+      - name: Run browser checks
+        run: |
+          ./sefirot --data-dir "$RUNNER_TEMP/sefirot-e2e" --port 18080 &
+          for i in $(seq 1 50); do curl -sf http://127.0.0.1:18080/api/health >/dev/null && break; sleep 0.2; done
+          SHOT_DIR=shots python scripts/e2e/run.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ui-screenshots
+          path: shots

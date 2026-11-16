@@ -1,0 +1,45 @@
+name: Desktop shell checks
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tauri-check:
+    name: Tauri compile (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.25.x'
+          cache: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: desktop/src-tauri -> target
+      - name: Install Linux WebKitGTK build dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential curl wget file libxdo-dev libssl-dev librsvg2-dev libwebkit2gtk-4.1-dev libayatana-appindicator3-dev patchelf
+      - name: Build local frontend assets
+        run: npm install && npm run frontend:build
+      - name: Build native Go sidecar
+        shell: bash
+        run: ./scripts/build-desktop-sidecar.sh
+      - name: Install Tauri CLI
+        run: npm --prefix desktop install
+      - name: Compile Tauri desktop shell
+        run: cargo check --manifest-path desktop/src-tauri/Cargo.toml
