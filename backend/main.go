@@ -164,6 +164,9 @@ func main() {
 	if err := app.seed(); err != nil {
 		log.Fatal(err)
 	}
+	if err := app.upgradeLegacyWelcome(); err != nil {
+		log.Printf("welcome note upgrade: %v", err)
+	}
 	if err := app.seedAgentGuides(); err != nil {
 		log.Fatal(err)
 	}
@@ -289,6 +292,7 @@ func (a *App) routes() http.Handler {
 	mux.HandleFunc("GET /api/research/export", a.handleResearchExport)
 	mux.HandleFunc("GET /api/research/bibliography", a.handleResearchBibliography)
 	mux.HandleFunc("POST /api/research/lookup-doi", a.handleResearchLookupDOI)
+	mux.HandleFunc("GET /api/terminal/sessions", a.handleTerminalSessions)
 	mux.HandleFunc("GET /api/settings", a.handleSettingsGet)
 	mux.HandleFunc("PUT /api/settings", a.handleSettingsPut)
 	mux.HandleFunc("GET /api/integrity", a.handleIntegrity)

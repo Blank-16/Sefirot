@@ -21,6 +21,7 @@ type Settings struct {
 	ResearchDocs []string       `json:"researchDocs"`
 	Macros       map[string]any `json:"macros"`
 	DOILookup    bool           `json:"doiLookup"`
+	EditorNoWrap bool           `json:"editorNoWrap"`
 }
 
 type settingsStore struct {

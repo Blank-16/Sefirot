@@ -1,12 +1,49 @@
 package main
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"errors"
 	"os"
 	"path"
 	"sefirot/internal/indexing"
+	"sefirot/internal/vaultfs"
 	"strings"
 )
+
+const welcomeSeed = `<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Welcome to SEFIROT</title><meta name="description" content="A local-first HTML knowledge workspace with full-text search, wiki-links, and interactive notes."><meta name="vault:type" content="guide"><meta name="vault:tags" content="getting-started, knowledge-management, sefirot">
+<style>:root{--vault-bg:#090B09;--vault-surface:#11140F;--vault-ink:#E9E8DF;--vault-line:#34382E;--vault-accent:#B69B5B}body{font:17px/1.7 Georgia,"Palatino Linotype",serif;max-width:760px;margin:3rem auto;padding:0 1.25rem;color:var(--vault-ink);background:var(--vault-bg)}h1,h2{color:var(--vault-ink);font-weight:400}a{color:var(--vault-accent)}code,kbd{background:var(--vault-surface);padding:.1em .35em}.demo{border:1px solid var(--vault-line);border-radius:2px;padding:1rem;background:var(--vault-surface);color:var(--vault-ink)}.demo input{padding:.6rem;background:var(--vault-bg);color:var(--vault-ink);border:1px solid var(--vault-line);border-radius:2px;width:7rem}.demo button{padding:.6rem .9rem;border-radius:2px;border:1px solid var(--vault-accent);background:transparent;color:var(--vault-ink);cursor:pointer}.result{font-size:1.5rem;font-weight:700}</style></head><body>
+<h1>Welcome to SEFIROT</h1><p><strong>The Archive</strong> — a local-first space to capture, connect, and retrieve knowledge.</p><p>Your notes are real HTML files stored in this installation’s vault directory, with a SQLite FTS5 index for fast search.</p>
+<h2>Wiki-links</h2><p>In Markdown mode, wrap a note name in double square brackets to link to it. Clicking a link to a note that does not exist yet offers to create it.</p>
+<h2>HTML and JavaScript are first-class</h2><p>This calculator runs directly inside the isolated preview frame:</p>
+<div class="demo"><label>First number <input id="a" type="number" value="12"></label> <label>Second number <input id="b" type="number" value="30"></label> <button id="add">Add</button><p class="result" id="result">42</p></div>
+<h2>Quick start</h2><ul><li>Create notes and folders from the left sidebar.</li><li>Use <code>[[Page Name]]</code> for wiki-links in Markdown mode.</li><li>Switch to Raw HTML to author complete documents.</li><li>Search with <kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>K</kbd>.</li></ul>
+<script>document.getElementById('add').addEventListener('click',()=>{const a=Number(document.getElementById('a').value)||0;const b=Number(document.getElementById('b').value)||0;document.getElementById('result').textContent=String(a+b)});</script>
+</body></html>`
+
+// legacyWelcomeHashes are the SHA-256 digests of welcome notes shipped by earlier
+// versions. A welcome note that still matches one byte for byte was never edited
+// by the user and is replaced with the theme-aware version; anything else is left alone.
+var legacyWelcomeHashes = map[string]bool{
+	"2e0718a152db15ee15cbece5a5abb61cf8ee3ad41d3c6551722e5ec642f029ec": true,
+	"00d1376a67f2928fbbdf05e1e8fad07719044579aadb9589fc3aaac2a5576486": true,
+}
+
+func (a *App) upgradeLegacyWelcome() error {
+	raw, err := indexing.ReadRootFile(a.root, "welcome.html")
+	if errors.Is(err, os.ErrNotExist) {
+		return nil
+	}
+	if err != nil {
+		return err
+	}
+	sum := sha256.Sum256(raw)
+	if !legacyWelcomeHashes[hex.EncodeToString(sum[:])] {
+		return nil
+	}
+	return vaultfs.WriteAtomic(a.root, "welcome.html", []byte(welcomeSeed))
+}
 
 func (a *App) seed() error {
 	hasHTML := false
@@ -40,16 +77,7 @@ func (a *App) seed() error {
 	if hasHTML {
 		return nil
 	}
-	seed := `<!DOCTYPE html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Welcome to SEFIROT</title><meta name="description" content="A local-first HTML knowledge workspace with full-text search, wiki-links, and interactive notes."><meta name="vault:type" content="guide"><meta name="vault:tags" content="getting-started, knowledge-management, sefirot">
-<style>body{font:17px/1.7 Georgia,"Palatino Linotype",serif;max-width:760px;margin:3rem auto;padding:0 1.25rem;color:#E9E8DF;background:#090B09}h1,h2{color:#F0EFE7;font-weight:400}a{color:#B69B5B}.demo{border:1px solid #34382E;border-radius:2px;padding:1rem;background:#11140F}.demo input{padding:.6rem;background:#090B09;color:#E9E8DF;border:1px solid #34382E;border-radius:2px;width:7rem}.demo button{padding:.6rem .9rem;border-radius:6px;border:0;background:#6366f1;color:white;cursor:pointer}.result{font-size:1.5rem;font-weight:700}</style></head><body>
-<h1>Welcome to SEFIROT</h1><p><strong>The Archive</strong> — a local-first space to capture, connect, and retrieve knowledge.</p><p>Your notes are real HTML files stored in this installation’s vault directory, with a SQLite FTS5 index for fast search.</p>
-<h2>Wiki-links</h2><p>In Markdown mode, wrap a note name in double square brackets to link to it. Clicking a link to a note that does not exist yet offers to create it.</p>
-<h2>HTML and JavaScript are first-class</h2><p>This calculator runs directly inside the isolated preview frame:</p>
-<div class="demo"><label>First number <input id="a" type="number" value="12"></label> <label>Second number <input id="b" type="number" value="30"></label> <button id="add">Add</button><p class="result" id="result">42</p></div>
-<h2>Quick start</h2><ul><li>Create notes and folders from the left sidebar.</li><li>Use <code>[[Page Name]]</code> for wiki-links in Markdown mode.</li><li>Switch to Raw HTML to author complete documents.</li><li>Search with <kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>K</kbd>.</li></ul>
-<script>document.getElementById('add').addEventListener('click',()=>{const a=Number(document.getElementById('a').value)||0;const b=Number(document.getElementById('b').value)||0;document.getElementById('result').textContent=String(a+b)});</script>
-</body></html>`
+	seed := welcomeSeed
 	f, err := a.root.OpenFile("welcome.html", os.O_CREATE|os.O_WRONLY|os.O_EXCL, 0644)
 	if err != nil {
 		if errors.Is(err, os.ErrExist) {

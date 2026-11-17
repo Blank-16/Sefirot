@@ -3,6 +3,8 @@ package main
 import (
 	"archive/zip"
 	"bytes"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -553,5 +555,31 @@ func TestSearchFindsMathNotationAcrossForms(t *testing.T) {
 		if !strings.Contains(rec.Body.String(), "grad.html") || strings.Contains(rec.Body.String(), "other.html") {
 			t.Errorf("query %q returned %s", q, rec.Body.String())
 		}
+	}
+}
+
+func TestLegacyWelcomeIsUpgradedOnlyWhenUntouched(t *testing.T) {
+	a := newTestApp(t)
+	legacy := "<html><body>old dark welcome</body></html>"
+	sum := sha256.Sum256([]byte(legacy))
+	key := hex.EncodeToString(sum[:])
+	legacyWelcomeHashes[key] = true
+	defer delete(legacyWelcomeHashes, key)
+	path := filepath.Join(a.vaultDir, "welcome.html")
+	os.WriteFile(path, []byte(legacy), 0o644)
+	if err := a.upgradeLegacyWelcome(); err != nil {
+		t.Fatal(err)
+	}
+	got, _ := os.ReadFile(path)
+	if string(got) != welcomeSeed {
+		t.Fatal("an untouched legacy welcome note must be replaced")
+	}
+	os.WriteFile(path, []byte(legacy+"<p>my own edit</p>"), 0o644)
+	if err := a.upgradeLegacyWelcome(); err != nil {
+		t.Fatal(err)
+	}
+	got, _ = os.ReadFile(path)
+	if !strings.Contains(string(got), "my own edit") {
+		t.Fatal("an edited welcome note must never be overwritten")
 	}
 }

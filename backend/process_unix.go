@@ -14,7 +14,7 @@ func defaultShellCommand() *exec.Cmd {
 			return exec.Command(shell, "-l")
 		}
 	}
-	for _, shell := range []string{"zsh", "bash", "sh"} {
+	for _, shell := range []string{"bash", "zsh", "sh"} {
 		if path, err := exec.LookPath(shell); err == nil {
 			return exec.Command(path, "-l")
 		}
