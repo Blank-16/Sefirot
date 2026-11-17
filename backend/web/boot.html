@@ -1,28 +1,71 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="color-scheme" content="dark">
-  <title>SEFIROT — Starting</title>
-  <style>
-    :root{color-scheme:dark;background:#090909;color:#d4d4d8;font:14px/1.5 system-ui,sans-serif}
-    *{box-sizing:border-box}
-    body{min-height:100vh;margin:0;display:grid;place-items:center}
-    main{display:flex;flex-direction:column;align-items:center;gap:18px;text-align:center}
-    img{width:76px;height:76px}
-    h1{margin:0;font-size:18px;font-weight:500;letter-spacing:.18em}
-    p{margin:0;color:#71717a}
-    .pulse{width:5px;height:5px;border-radius:50%;background:#b59a58;box-shadow:0 0 14px #b59a5866;animation:pulse 1.2s ease-in-out infinite}
-    @keyframes pulse{50%{opacity:.25;transform:scale(.7)}}
-  </style>
-</head>
-<body>
-  <main>
-    <img src="brand.svg" alt="SEFIROT emblem">
-    <h1>SEFIROT</h1>
-    <p>Starting your local archive</p>
-    <span class="pulse" aria-hidden="true"></span>
-  </main>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <title>SEFIROT — Starting</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        background: #090909;
+        color: #d4d4d8;
+        font:
+          14px/1.5 system-ui,
+          sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        min-height: 100vh;
+        margin: 0;
+        display: grid;
+        place-items: center;
+      }
+      main {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 18px;
+        text-align: center;
+      }
+      img {
+        width: 76px;
+        height: 76px;
+      }
+      h1 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 500;
+        letter-spacing: 0.18em;
+      }
+      p {
+        margin: 0;
+        color: #71717a;
+      }
+      .pulse {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: #b59a58;
+        box-shadow: 0 0 14px #b59a5866;
+        animation: pulse 1.2s ease-in-out infinite;
+      }
+      @keyframes pulse {
+        50% {
+          opacity: 0.25;
+          transform: scale(0.7);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <img src="brand.svg" alt="SEFIROT emblem" />
+      <h1>SEFIROT</h1>
+      <p>Starting your local archive</p>
+      <span class="pulse" aria-hidden="true"></span>
+    </main>
+  </body>
 </html>
