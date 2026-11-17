@@ -1,24 +1,42 @@
-'use strict';
+"use strict";
 
 const DEFAULT_MATH_MACROS = {
-  R: '\\mathbb{R}', N: '\\mathbb{N}', Z: '\\mathbb{Z}', Q: '\\mathbb{Q}',
-  E: '\\mathbb{E}', Var: '\\operatorname{Var}', Cov: '\\operatorname{Cov}',
-  Tr: '\\operatorname{Tr}', dd: '\\,\\mathrm{d}', norm: ['\\left\\lVert #1 \\right\\rVert', 1],
+  R: "\\mathbb{R}",
+  N: "\\mathbb{N}",
+  Z: "\\mathbb{Z}",
+  Q: "\\mathbb{Q}",
+  E: "\\mathbb{E}",
+  Var: "\\operatorname{Var}",
+  Cov: "\\operatorname{Cov}",
+  Tr: "\\operatorname{Tr}",
+  dd: "\\,\\mathrm{d}",
+  norm: ["\\left\\lVert #1 \\right\\rVert", 1],
 };
 function loadMathMacros() {
-  try { return { ...DEFAULT_MATH_MACROS, ...JSON.parse(localStorage.getItem('sefirot-math-macros') || '{}') }; }
-  catch { return { ...DEFAULT_MATH_MACROS }; }
+  try {
+    return {
+      ...DEFAULT_MATH_MACROS,
+      ...JSON.parse(localStorage.getItem("sefirot-math-macros") || "{}"),
+    };
+  } catch {
+    return { ...DEFAULT_MATH_MACROS };
+  }
 }
-
 
 // Research Mode is a per-document presentation preference. It does not alter
 // document contents or the vault's Markdown/HTML storage format.
-const RESEARCH_MODE_STORAGE_KEY = 'sefirot-research-mode-documents';
+const RESEARCH_MODE_STORAGE_KEY = "sefirot-research-mode-documents";
 function loadResearchModeMap() {
   try {
-    const value = JSON.parse(localStorage.getItem(RESEARCH_MODE_STORAGE_KEY) || '{}');
-    return value && typeof value === 'object' && !Array.isArray(value) ? value : {};
-  } catch { return {}; }
+    const value = JSON.parse(
+      localStorage.getItem(RESEARCH_MODE_STORAGE_KEY) || "{}",
+    );
+    return value && typeof value === "object" && !Array.isArray(value)
+      ? value
+      : {};
+  } catch {
+    return {};
+  }
 }
 function isResearchMode(notePath) {
   return Boolean(notePath && loadResearchModeMap()[notePath] === true);
@@ -28,44 +46,51 @@ function persistResearchMode(notePath, enabled) {
   const modes = loadResearchModeMap();
   if (enabled) modes[notePath] = true;
   else delete modes[notePath];
-  try { localStorage.setItem(RESEARCH_MODE_STORAGE_KEY, JSON.stringify(modes)); }
-  catch (error) { console.warn('Could not persist the document mode preference.', error); }
-  if (typeof queueSettingsSync === 'function') queueSettingsSync();
+  try {
+    localStorage.setItem(RESEARCH_MODE_STORAGE_KEY, JSON.stringify(modes));
+  } catch (error) {
+    console.warn("Could not persist the document mode preference.", error);
+  }
+  if (typeof queueSettingsSync === "function") queueSettingsSync();
 }
 function migrateResearchModePath(oldPath, newPath) {
   const modes = loadResearchModeMap();
   if (modes[oldPath] === true) modes[newPath] = true;
   delete modes[oldPath];
-  try { localStorage.setItem(RESEARCH_MODE_STORAGE_KEY, JSON.stringify(modes)); } catch {}
-  if (typeof queueSettingsSync === 'function') queueSettingsSync();
+  try {
+    localStorage.setItem(RESEARCH_MODE_STORAGE_KEY, JSON.stringify(modes));
+  } catch {}
+  if (typeof queueSettingsSync === "function") queueSettingsSync();
 }
 function forgetResearchModePath(notePath) {
   const modes = loadResearchModeMap();
   delete modes[notePath];
-  try { localStorage.setItem(RESEARCH_MODE_STORAGE_KEY, JSON.stringify(modes)); } catch {}
+  try {
+    localStorage.setItem(RESEARCH_MODE_STORAGE_KEY, JSON.stringify(modes));
+  } catch {}
 }
 function applyResearchMode(enabled) {
   const active = Boolean(enabled && state.currentPath);
   state.researchMode = active;
-  const toggle = $('#researchModeToggle');
-  toggle.textContent = active ? 'Research mode on' : 'Enable research mode';
-  toggle.setAttribute('aria-pressed', String(active));
+  const toggle = $("#researchModeToggle");
+  toggle.textContent = active ? "Research mode on" : "Enable research mode";
+  toggle.setAttribute("aria-pressed", String(active));
   toggle.title = active
-    ? 'Hide scientific authoring tools for this document'
-    : 'Show scientific authoring tools for this document';
-  toggle.classList.toggle('border-amber-800', active);
-  toggle.classList.toggle('bg-amber-950/30', active);
-  toggle.classList.toggle('text-amber-200', active);
-  $('#documentTemplate').classList.toggle('hidden', !active);
-  $('#mathMacroManage').classList.toggle('hidden', !active);
-  $('#mathToolbar').classList.toggle('hidden', !active);
-  $('#mathToolbar').classList.toggle('flex', active);
-  $('#editor').placeholder = active
-    ? 'Write a research document, mathematical derivation, or scientific note…'
-    : 'Write a note…';
+    ? "Hide scientific authoring tools for this document"
+    : "Show scientific authoring tools for this document";
+  toggle.classList.toggle("border-amber-800", active);
+  toggle.classList.toggle("bg-amber-950/30", active);
+  toggle.classList.toggle("text-amber-200", active);
+  $("#documentTemplate").classList.toggle("hidden", !active);
+  $("#mathMacroManage").classList.toggle("hidden", !active);
+  $("#mathToolbar").classList.toggle("hidden", !active);
+  $("#mathToolbar").classList.toggle("flex", active);
+  $("#editor").placeholder = active
+    ? "Write a research document, mathematical derivation, or scientific note…"
+    : "Write a note…";
 }
 
-$('#researchModeToggle').addEventListener('click', () => {
+$("#researchModeToggle").addEventListener("click", () => {
   if (!state.currentPath) return;
   const next = !state.researchMode;
   persistResearchMode(state.currentPath, next);
@@ -81,63 +106,97 @@ const SCIENTIFIC_TEMPLATES = {
 };
 
 function insertAtCaret(text) {
-  const editor = $('#editor');
+  const editor = $("#editor");
   const start = editor.selectionStart ?? editor.value.length;
   const end = editor.selectionEnd ?? start;
-  editor.setRangeText(text, start, end, 'end');
+  editor.setRangeText(text, start, end, "end");
   editor.focus();
-  editor.dispatchEvent(new Event('input', { bubbles: true }));
+  editor.dispatchEvent(new Event("input", { bubbles: true }));
 }
 
-$('#mathSymbolPalette').addEventListener('click', event => {
-  const button = event.target.closest('[data-symbol]');
+$("#mathSymbolPalette").addEventListener("click", (event) => {
+  const button = event.target.closest("[data-symbol]");
   if (!button) return;
   insertAtCaret(`\\(${button.dataset.symbol}\\)`);
 });
 
-$('#mathSymbolSearch').addEventListener('input', event => {
+$("#mathSymbolSearch").addEventListener("input", (event) => {
   const query = event.target.value.trim().toLowerCase();
-  $('#mathSymbolPalette').querySelectorAll('[data-symbol]').forEach(button => {
-    const haystack = `${button.title} ${button.dataset.symbol} ${button.textContent}`.toLowerCase();
-    button.hidden = query && !haystack.includes(query);
-  });
+  $("#mathSymbolPalette")
+    .querySelectorAll("[data-symbol]")
+    .forEach((button) => {
+      const haystack =
+        `${button.title} ${button.dataset.symbol} ${button.textContent}`.toLowerCase();
+      button.hidden = query && !haystack.includes(query);
+    });
 });
 
-$('#documentTemplate').addEventListener('change', event => {
+$("#documentTemplate").addEventListener("change", (event) => {
   const key = event.target.value;
-  event.target.value = '';
+  event.target.value = "";
   if (!key || !SCIENTIFIC_TEMPLATES[key]) return;
-  const editor = $('#editor');
-  if (editor.value.trim() && !confirm('Replace the current document with this template? Save or copy your current text first if needed.')) return;
-  if (!state.isMarkdown) { state.isMarkdown = true; $('#authorMode').value = 'markdown'; $('#editorModeLabel').textContent = 'Markdown source'; $('#propFormat').textContent = 'Markdown → HTML'; }
+  const editor = $("#editor");
+  if (
+    editor.value.trim() &&
+    !confirm(
+      "Replace the current document with this template? Save or copy your current text first if needed.",
+    )
+  )
+    return;
+  if (!state.isMarkdown) {
+    state.isMarkdown = true;
+    $("#authorMode").value = "markdown";
+    $("#editorModeLabel").textContent = "Markdown source";
+    $("#propFormat").textContent = "Markdown → HTML";
+  }
   editor.value = SCIENTIFIC_TEMPLATES[key];
   editor.setSelectionRange(0, 0);
   editor.focus();
-  editor.dispatchEvent(new Event('input', { bubbles: true }));
+  editor.dispatchEvent(new Event("input", { bubbles: true }));
 });
 
-$('#mathMacroManage').addEventListener('click', () => {
+$("#mathMacroManage").addEventListener("click", () => {
   const current = loadMathMacros();
-  const instruction = 'Add/update: name=definition; arguments: name/arity=definition (example: myvec/1=\\boldsymbol{#1}). Remove with -name. Built-ins: ' + Object.keys(DEFAULT_MATH_MACROS).join(', ');
-  const value = prompt(instruction, '');
+  const instruction =
+    "Add/update: name=definition; arguments: name/arity=definition (example: myvec/1=\\boldsymbol{#1}). Remove with -name. Built-ins: " +
+    Object.keys(DEFAULT_MATH_MACROS).join(", ");
+  const value = prompt(instruction, "");
   if (value === null || !value.trim()) return;
   const trimmed = value.trim();
   const remove = trimmed.match(/^-([A-Za-z]+)$/);
   if (remove) {
-    if (Object.hasOwn(DEFAULT_MATH_MACROS, remove[1])) { alert('Built-in macros cannot be removed.'); return; }
+    if (Object.hasOwn(DEFAULT_MATH_MACROS, remove[1])) {
+      alert("Built-in macros cannot be removed.");
+      return;
+    }
     delete current[remove[1]];
   } else {
-    const split = trimmed.indexOf('=');
-    if (split < 1) { alert('Use name=LaTeX definition.'); return; }
+    const split = trimmed.indexOf("=");
+    if (split < 1) {
+      alert("Use name=LaTeX definition.");
+      return;
+    }
     const spec = trimmed.slice(0, split).trim();
     const definition = trimmed.slice(split + 1).trim();
     const match = spec.match(/^([A-Za-z]+)(?:\/(\d))?$/);
-    if (!match || !definition || definition.length > 300) { alert('Use a letter-only macro name, optional /0–9 argument count, and a 1–300 character definition.'); return; }
-    if (Object.keys(current).length >= 50 && !Object.hasOwn(current, match[1])) { alert('A maximum of 50 macros is supported.'); return; }
-    current[match[1]] = match[2] === undefined ? definition : [definition, Number(match[2])];
+    if (!match || !definition || definition.length > 300) {
+      alert(
+        "Use a letter-only macro name, optional /0–9 argument count, and a 1–300 character definition.",
+      );
+      return;
+    }
+    if (
+      Object.keys(current).length >= 50 &&
+      !Object.hasOwn(current, match[1])
+    ) {
+      alert("A maximum of 50 macros is supported.");
+      return;
+    }
+    current[match[1]] =
+      match[2] === undefined ? definition : [definition, Number(match[2])];
   }
-  localStorage.setItem('sefirot-math-macros', JSON.stringify(current));
-  if (typeof queueSettingsSync === 'function') queueSettingsSync();
+  localStorage.setItem("sefirot-math-macros", JSON.stringify(current));
+  if (typeof queueSettingsSync === "function") queueSettingsSync();
   if (state.currentPath && !state.dirty) renderPreview();
-  alert('Macro saved locally. It will be available in rendered math previews.');
+  alert("Macro saved locally. It will be available in rendered math previews.");
 });
