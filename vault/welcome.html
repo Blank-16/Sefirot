@@ -1,10 +1,94 @@
-<!DOCTYPE html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Welcome to SEFIROT</title>
-<style>body{font:16px/1.65 system-ui,sans-serif;max-width:760px;margin:3rem auto;padding:0 1.25rem;color:#e4e4e7;background:#09090b}h1,h2{color:#fafafa}a{color:#a5b4fc}.demo{border:1px solid #3f3f46;border-radius:12px;padding:1rem;background:#18181b}.demo input{padding:.6rem;background:#09090b;color:white;border:1px solid #52525b;border-radius:6px;width:7rem}.demo button{padding:.6rem .9rem;border-radius:6px;border:0;background:#6366f1;color:white;cursor:pointer}.result{font-size:1.5rem;font-weight:700}</style></head><body>
-<h1>Welcome to SEFIROT</h1><p><strong>The Archive</strong> — a local-first space to capture, connect, and retrieve knowledge.</p><p>Your notes are real HTML files stored in this installation’s vault directory, with a SQLite FTS5 index for fast search.</p>
-<h2>Wiki-links</h2><p>Open or create <a href="#" class="wiki-link" data-wikilink="sandbox-demo">sandbox-demo</a> from this link.</p>
-<h2>HTML and JavaScript are first-class</h2><p>This calculator runs directly inside the isolated preview frame:</p>
-<div class="demo"><label>First number <input id="a" type="number" value="12"></label> <label>Second number <input id="b" type="number" value="30"></label> <button id="add">Add</button><p class="result" id="result">42</p></div>
-<h2>Quick start</h2><ul><li>Create notes and folders from the left sidebar.</li><li>Use <code>[[Page Name]]</code> for wiki-links in Markdown mode.</li><li>Switch to Raw HTML to author complete documents.</li><li>Search with <kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>K</kbd>.</li></ul>
-<script>document.getElementById('add').addEventListener('click',()=>{const a=Number(document.getElementById('a').value)||0;const b=Number(document.getElementById('b').value)||0;document.getElementById('result').textContent=String(a+b)});</script>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light dark"><title>Welcome to SEFIROT</title><style>body{max-width:820px;margin:2.5rem auto;padding:0 1.5rem 4rem;font:16px/1.75 system-ui,sans-serif;color:CanvasText;background:Canvas}h1,h2,h3{line-height:1.25}img{max-width:100%;height:auto}pre{overflow:auto;padding:1rem;border-radius:.5rem;background:color-mix(in srgb,CanvasText 8%,Canvas)}a{color:LinkText}table{border-collapse:collapse}td,th{border:1px solid color-mix(in srgb,CanvasText 25%,Canvas);padding:.45rem}</style></head><body><p>&lt;!doctype html&gt;</p>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Welcome to SEFIROT</title>
+    <style>
+      body {
+        font:
+          16px/1.65 system-ui,
+          sans-serif;
+        max-width: 760px;
+        margin: 3rem auto;
+        padding: 0 1.25rem;
+        color: #e4e4e7;
+        background: #09090b;
+      }
+      h1,
+      h2 {
+        color: #fafafa;
+      }
+      a {
+        color: #a5b4fc;
+      }
+      .demo {
+        border: 1px solid #3f3f46;
+        border-radius: 12px;
+        padding: 1rem;
+        background: #18181b;
+      }
+      .demo input {
+        padding: 0.6rem;
+        background: #09090b;
+        color: white;
+        border: 1px solid #52525b;
+        border-radius: 6px;
+        width: 7rem;
+      }
+      .demo button {
+        padding: 0.6rem 0.9rem;
+        border-radius: 6px;
+        border: 0;
+        background: #6366f1;
+        color: white;
+        cursor: pointer;
+      }
+      .result {
+        font-size: 1.5rem;
+        font-weight: 700;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Welcome to SEFIROT</h1>
+    <p>
+      <strong>The Archive</strong> — a local-first space to capture, connect, and retrieve
+      knowledge.
+    </p>
+    <p>
+      Your notes are real HTML files stored in this installation’s vault directory, with a SQLite
+      FTS5 index for fast search.
+    </p>
+    <h2>Wiki-links</h2>
+    <p>
+      Open or create
+      <a href="#" class="wiki-link" data-wikilink="sandbox-demo">sandbox-demo</a>
+      from this link.
+    </p>
+    <h2>HTML and JavaScript are first-class</h2>
+    <p>This calculator runs directly inside the isolated preview frame:</p>
+    <div class="demo">
+      <label>First number <input id="a" type="number" value="12" /></label>
+      <label>Second number <input id="b" type="number" value="30" /></label>
+      <button id="add">Add</button>
+      <p class="result" id="result">42</p>
+    </div>
+    <h2>Quick start</h2>
+    <ul>
+      <li>Create notes and folders from the left sidebar.</li>
+      <li>Use <code>[[Page Name]]</code> for wiki-links in Markdown mode.</li>
+      <li>Switch to Raw HTML to author complete documents.</li>
+      <li>Search with <kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>K</kbd>.</li>
+    </ul>
+    <script>
+            document.getElementById("add").addEventListener("click", () => {
+              const a = Number(document.getElementById("a").value) || 0;
+              const b = Number(document.getElementById("b").value) || 0;
+              document.getElementById("result").textContent = String(a + b);
+            });
+    </script>
+  </body>
+</html>
 </body></html>
+<!-- vault-source-md:PCFkb2N0eXBlIGh0bWw+CjxodG1sIGxhbmc9ImVuIj4KICA8aGVhZD4KICAgIDxtZXRhIGNoYXJzZXQ9InV0Zi04IiAvPgogICAgPG1ldGEgbmFtZT0idmlld3BvcnQiIGNvbnRlbnQ9IndpZHRoPWRldmljZS13aWR0aCxpbml0aWFsLXNjYWxlPTEiIC8+CiAgICA8dGl0bGU+V2VsY29tZSB0byBTRUZJUk9UPC90aXRsZT4KICAgIDxzdHlsZT4KICAgICAgYm9keSB7CiAgICAgICAgZm9udDoKICAgICAgICAgIDE2cHgvMS42NSBzeXN0ZW0tdWksCiAgICAgICAgICBzYW5zLXNlcmlmOwogICAgICAgIG1heC13aWR0aDogNzYwcHg7CiAgICAgICAgbWFyZ2luOiAzcmVtIGF1dG87CiAgICAgICAgcGFkZGluZzogMCAxLjI1cmVtOwogICAgICAgIGNvbG9yOiAjZTRlNGU3OwogICAgICAgIGJhY2tncm91bmQ6ICMwOTA5MGI7CiAgICAgIH0KICAgICAgaDEsCiAgICAgIGgyIHsKICAgICAgICBjb2xvcjogI2ZhZmFmYTsKICAgICAgfQogICAgICBhIHsKICAgICAgICBjb2xvcjogI2E1YjRmYzsKICAgICAgfQogICAgICAuZGVtbyB7CiAgICAgICAgYm9yZGVyOiAxcHggc29saWQgIzNmM2Y0NjsKICAgICAgICBib3JkZXItcmFkaXVzOiAxMnB4OwogICAgICAgIHBhZGRpbmc6IDFyZW07CiAgICAgICAgYmFja2dyb3VuZDogIzE4MTgxYjsKICAgICAgfQogICAgICAuZGVtbyBpbnB1dCB7CiAgICAgICAgcGFkZGluZzogMC42cmVtOwogICAgICAgIGJhY2tncm91bmQ6ICMwOTA5MGI7CiAgICAgICAgY29sb3I6IHdoaXRlOwogICAgICAgIGJvcmRlcjogMXB4IHNvbGlkICM1MjUyNWI7CiAgICAgICAgYm9yZGVyLXJhZGl1czogNnB4OwogICAgICAgIHdpZHRoOiA3cmVtOwogICAgICB9CiAgICAgIC5kZW1vIGJ1dHRvbiB7CiAgICAgICAgcGFkZGluZzogMC42cmVtIDAuOXJlbTsKICAgICAgICBib3JkZXItcmFkaXVzOiA2cHg7CiAgICAgICAgYm9yZGVyOiAwOwogICAgICAgIGJhY2tncm91bmQ6ICM2MzY2ZjE7CiAgICAgICAgY29sb3I6IHdoaXRlOwogICAgICAgIGN1cnNvcjogcG9pbnRlcjsKICAgICAgfQogICAgICAucmVzdWx0IHsKICAgICAgICBmb250LXNpemU6IDEuNXJlbTsKICAgICAgICBmb250LXdlaWdodDogNzAwOwogICAgICB9CiAgICA8L3N0eWxlPgogIDwvaGVhZD4KICA8Ym9keT4KICAgIDxoMT5XZWxjb21lIHRvIFNFRklST1Q8L2gxPgogICAgPHA+CiAgICAgIDxzdHJvbmc+VGhlIEFyY2hpdmU8L3N0cm9uZz4g4oCUIGEgbG9jYWwtZmlyc3Qgc3BhY2UgdG8gY2FwdHVyZSwgY29ubmVjdCwgYW5kIHJldHJpZXZlCiAgICAgIGtub3dsZWRnZS4KICAgIDwvcD4KICAgIDxwPgogICAgICBZb3VyIG5vdGVzIGFyZSByZWFsIEhUTUwgZmlsZXMgc3RvcmVkIGluIHRoaXMgaW5zdGFsbGF0aW9u4oCZcyB2YXVsdCBkaXJlY3RvcnksIHdpdGggYSBTUUxpdGUKICAgICAgRlRTNSBpbmRleCBmb3IgZmFzdCBzZWFyY2guCiAgICA8L3A+CiAgICA8aDI+V2lraS1saW5rczwvaDI+CiAgICA8cD4KICAgICAgT3BlbiBvciBjcmVhdGUKICAgICAgPGEgaHJlZj0iIyIgY2xhc3M9Indpa2ktbGluayIgZGF0YS13aWtpbGluaz0ic2FuZGJveC1kZW1vIj5zYW5kYm94LWRlbW88L2E+CiAgICAgIGZyb20gdGhpcyBsaW5rLgogICAgPC9wPgogICAgPGgyPkhUTUwgYW5kIEphdmFTY3JpcHQgYXJlIGZpcnN0LWNsYXNzPC9oMj4KICAgIDxwPlRoaXMgY2FsY3VsYXRvciBydW5zIGRpcmVjdGx5IGluc2lkZSB0aGUgaXNvbGF0ZWQgcHJldmlldyBmcmFtZTo8L3A+CiAgICA8ZGl2IGNsYXNzPSJkZW1vIj4KICAgICAgPGxhYmVsPkZpcnN0IG51bWJlciA8aW5wdXQgaWQ9ImEiIHR5cGU9Im51bWJlciIgdmFsdWU9IjEyIiAvPjwvbGFiZWw+CiAgICAgIDxsYWJlbD5TZWNvbmQgbnVtYmVyIDxpbnB1dCBpZD0iYiIgdHlwZT0ibnVtYmVyIiB2YWx1ZT0iMzAiIC8+PC9sYWJlbD4KICAgICAgPGJ1dHRvbiBpZD0iYWRkIj5BZGQ8L2J1dHRvbj4KICAgICAgPHAgY2xhc3M9InJlc3VsdCIgaWQ9InJlc3VsdCI+NDI8L3A+CiAgICA8L2Rpdj4KICAgIDxoMj5RdWljayBzdGFydDwvaDI+CiAgICA8dWw+CiAgICAgIDxsaT5DcmVhdGUgbm90ZXMgYW5kIGZvbGRlcnMgZnJvbSB0aGUgbGVmdCBzaWRlYmFyLjwvbGk+CiAgICAgIDxsaT5Vc2UgPGNvZGU+W1tQYWdlIE5hbWVdXTwvY29kZT4gZm9yIHdpa2ktbGlua3MgaW4gTWFya2Rvd24gbW9kZS48L2xpPgogICAgICA8bGk+U3dpdGNoIHRvIFJhdyBIVE1MIHRvIGF1dGhvciBjb21wbGV0ZSBkb2N1bWVudHMuPC9saT4KICAgICAgPGxpPlNlYXJjaCB3aXRoIDxrYmQ+Q3RybDwva2JkPi88a2JkPuKMmDwva2JkPiArIDxrYmQ+Szwva2JkPi48L2xpPgogICAgPC91bD4KICAgIDxzY3JpcHQ+CiAgICAgICAgICAgIGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCJhZGQiKS5hZGRFdmVudExpc3RlbmVyKCJjbGljayIsICgpID0+IHsKICAgICAgICAgICAgICBjb25zdCBhID0gTnVtYmVyKGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCJhIikudmFsdWUpIHx8IDA7CiAgICAgICAgICAgICAgY29uc3QgYiA9IE51bWJlcihkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgiYiIpLnZhbHVlKSB8fCAwOwogICAgICAgICAgICAgIGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCJyZXN1bHQiKS50ZXh0Q29udGVudCA9IFN0cmluZyhhICsgYik7CiAgICAgICAgICAgIH0pOwogICAgPC9zY3JpcHQ+CiAgPC9ib2R5Pgo8L2h0bWw+Cg== -->

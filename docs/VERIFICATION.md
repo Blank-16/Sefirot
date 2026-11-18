@@ -8,7 +8,7 @@ Most recent run (Go 1.25.14 on Linux amd64, Chromium 153 via Playwright).
 - `go vet ./...` type-checks for windows/amd64, darwin/arm64, darwin/amd64 and linux/arm64 (type-check only; no cross-built binary was executed).
 - `npm run frontend:build` produces Tailwind CSS, xterm.js and MathJax assets.
 - `node --check` on every frontend script.
-- Browser end-to-end (23 checks, 0 console errors): currency text is not rendered as math; MathJax loads only in Research Mode and renders inline and display math; preview scroll survives autosave; preferences persist on the server and apply in a fresh browser origin; delete, trash listing and restore; search arrow-key navigation and dialog semantics; integrity panel; terminal connects and survives hiding the overlay; BibTeX import with provenance, DOI lookup refused while disabled, citation removal, alias resolution. Screenshots reviewed at 1600, 1100, 820 and 390 px wide in both themes.
+- Browser end-to-end (39 checks, 0 console errors): currency text is not rendered as math; MathJax loads only in Research Mode and renders inline and display math; preview scroll survives autosave; preferences persist on the server and apply in a fresh browser origin; delete, trash listing and restore; search arrow-key navigation and dialog semantics; integrity panel; terminal connects and survives hiding the overlay; BibTeX import with provenance, DOI lookup refused while disabled, citation removal, alias resolution; search focus and highlight, Tools chevron alignment, dark dropdown surfaces, Wrap and Format (including math preserved and undo), light-theme standalone document, terminal reattach with replay after a reload. Screenshots reviewed at 1600, 1100, 820 and 390 px wide in both themes.
 
 ## Environment caveats
 
@@ -22,7 +22,7 @@ Most recent run (Go 1.25.14 on Linux amd64, Chromium 153 via Playwright).
 - Windows, WSL2 and macOS runtime checks (ConPTY, file locking, WebView).
 - Cross-built binaries.
 - Large-vault and large-PDF performance measurements.
-- `scripts/smoke-test.sh`, `scripts/verify-release.sh`.
+- Windows and macOS terminals (the PTY tests ran on Linux only); `scripts/smoke-test.sh`, `scripts/verify-release.sh`.
 - Ollama semantic search.
 
 ## Earlier records

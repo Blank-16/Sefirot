@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Spring Boot 3 Architecture and Features</title>
+    <meta name="description" content="Technical guide for Spring Framework 6 and Spring Boot 3 covering Java 17 baseline, Jakarta EE 10, GraalVM AOT native compilation, and observability." />
+    <meta name="vault:type" content="framework" />
+    <meta name="vault:tags" content="java, spring, spring-boot-3, microservices" />
+    <style>
+      body {
+        font: 16px/1.65 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        max-width: 800px;
+        margin: 3rem auto;
+        padding: 0 1.25rem;
+        color: #e4e4e7;
+        background: #09090b;
+      }
+      h1, h2, h3 {
+        color: #fafafa;
+      }
+      a {
+        color: #a5b4fc;
+      }
+      code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 0.9em;
+        background: #18181b;
+        padding: 0.15rem 0.35rem;
+        border-radius: 4px;
+        border: 1px solid #27272a;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1.5rem 0;
+      }
+      th, td {
+        border: 1px solid #27272a;
+        padding: 0.6rem 0.8rem;
+        text-align: left;
+      }
+      th {
+        background: #18181b;
+        color: #fafafa;
+      }
+      .card {
+        border: 1px solid #27272a;
+        border-radius: 8px;
+        padding: 1rem 1.25rem;
+        background: #121215;
+        margin-bottom: 1.5rem;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Spring Boot 3 Architecture and Features</h1>
+
+    <p>
+      Spring Boot 3 represents a generational shift in the Java enterprise ecosystem, building on Spring Framework 6 and requiring Java 17 as a minimum baseline. It standardizes on Jakarta EE 10, provides native compilation via GraalVM Ahead-Of-Time (AOT) processing, and introduces unified observability.
+    </p>
+
+    <h2>Related Notes</h2>
+    <p>
+      Underlying runtime:
+      <a href="#" class="wiki-link" data-wikilink="Java/Java_Platform" data-relation="extends">Java Platform Architecture</a>.
+      Deployment and automation:
+      <a href="#" class="wiki-link" data-wikilink="devops/devops" data-relation="related-to">DevOps and Automation Tools</a>.
+    </p>
+
+    <div class="card">
+      <h3>1. Core Architectural Shifts in Spring Boot 3</h3>
+      <ul>
+        <li><strong>Java 17 Baseline:</strong> Full leverage of Java 17+ language constructs, including records for DTOs, switch pattern matching, text blocks, and virtual thread execution (Java 21).</li>
+        <li><strong>Jakarta EE 10 Migration:</strong> Complete transition from the legacy <code>javax.*</code> package namespace to <code>jakarta.*</code> across all APIs (Servlet 6.0, JPA 3.1, Bean Validation 3.0).</li>
+        <li><strong>Ahead-of-Time (AOT) Engine:</strong> Pre-computes Spring bean definitions, proxy evaluations, and reflection registrations at build time, eliminating runtime reflection overhead.</li>
+        <li><strong>GraalVM Native Image Support:</strong> Direct compilation to standalone native platform binaries, providing startup times under 50 milliseconds and drastically reduced memory footprints for cloud deployments.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>2. Key Framework Modules</h3>
+      <ul>
+        <li><strong>Spring Web (MVC &amp; WebFlux):</strong>
+          <ul>
+            <li><em>Spring MVC:</em> Synchronous, blocking servlet-based web layer running on Tomcat, Jetty, or Undertow.</li>
+            <li><em>Spring WebFlux:</em> Non-blocking, reactive web runtime powered by Project Reactor and Netty.</li>
+            <li><em>HTTP Interfaces:</em> Declarative HTTP clients using <code>@HttpExchange</code> annotations, reducing boilerplate for REST consumption.</li>
+          </ul>
+        </li>
+        <li><strong>Spring Data JPA:</strong> Automated repository generation, dynamic query execution, and seamless persistence mapping built atop Hibernate 6.</li>
+        <li><strong>Spring Security 6:</strong> Functional component-based security configuration chain using <code>SecurityFilterChain</code> bean definitions, standardizing on stateless OAuth2/JWT workflows.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>3. Observability and Production Readiness</h3>
+      <ul>
+        <li><strong>Unified Observation API:</strong> Replaces disparate instrumentation with Micrometer Observation, generating both metrics and distributed tracing from a single instrumentation point.</li>
+        <li><strong>Tracing Integration:</strong> Native support for OpenTelemetry, W3C Trace Context, and Zipkin without requiring separate Sleuth libraries.</li>
+        <li><strong>Spring Boot Actuator:</strong> Operational endpoints exposing application health, runtime metrics, environment configs, and Prometheus scrape endpoints via <code>/actuator/*</code>.</li>
+      </ul>
+    </div>
+
+    <h2>Spring Boot 2 vs Spring Boot 3 Comparison</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Capability</th>
+          <th>Spring Boot 2.x</th>
+          <th>Spring Boot 3.x</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Minimum Java Version</strong></td>
+          <td>Java 8 (Java 11 recommended)</td>
+          <td>Java 17 (Supports Java 21)</td>
+        </tr>
+        <tr>
+          <td><strong>Enterprise Namespace</strong></td>
+          <td><code>javax.*</code></td>
+          <td><code>jakarta.*</code></td>
+        </tr>
+        <tr>
+          <td><strong>Native Image Support</strong></td>
+          <td>Experimental (Spring Native)</td>
+          <td>Native GA (GraalVM AOT built-in)</td>
+        </tr>
+        <tr>
+          <td><strong>Observability</strong></td>
+          <td>Spring Cloud Sleuth + Micrometer</td>
+          <td>Micrometer Observation (Built-in tracing)</td>
+        </tr>
+        <tr>
+          <td><strong>HTTP Client</strong></td>
+          <td>RestTemplate / WebClient</td>
+          <td>Declarative <code>@HttpExchange</code> / RestClient</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>Example: Declarative RestClient in Spring Boot 3</h2>
+    <p>Using Spring 6 / Spring Boot 3 declarative HTTP interfaces:</p>
+    <pre><code>public interface UserClient {
+    @GetExchange("/users/{id}")
+    UserResponse getUserById(@PathVariable("id") Long id);
+}</code></pre>
+  </body>
+</html>

@@ -17,7 +17,6 @@ The following ideas remain separate implementation projects rather than partiall
 
 These should be added behind stable APIs and migrations, with the HTML document vault remaining the source of truth.
 
-
 ## Identity
 
 The product name is SEFIROT (The Archive). The emblem uses ten connected nodes and curved paths as an original visual metaphor for interconnected knowledge. Existing light and dark theme palettes are intentionally preserved.

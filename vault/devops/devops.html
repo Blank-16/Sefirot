@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>DevOps and Automation Tools</title>
+    <meta name="description" content="Overview of DevOps principles and how Terraform, Ansible, Puppet, and Nagios are used across infrastructure provisioning, configuration, and monitoring." />
+    <meta name="vault:type" content="concept" />
+    <meta name="vault:tags" content="devops, infrastructure, automation, monitoring" />
+    <style>
+      body {
+        font: 16px/1.65 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        max-width: 800px;
+        margin: 3rem auto;
+        padding: 0 1.25rem;
+        color: #e4e4e7;
+        background: #09090b;
+      }
+      h1, h2, h3 {
+        color: #fafafa;
+      }
+      a {
+        color: #a5b4fc;
+      }
+      code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 0.9em;
+        background: #18181b;
+        padding: 0.15rem 0.35rem;
+        border-radius: 4px;
+        border: 1px solid #27272a;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1.5rem 0;
+      }
+      th, td {
+        border: 1px solid #27272a;
+        padding: 0.6rem 0.8rem;
+        text-align: left;
+      }
+      th {
+        background: #18181b;
+        color: #fafafa;
+      }
+      .card {
+        border: 1px solid #27272a;
+        border-radius: 8px;
+        padding: 1rem 1.25rem;
+        background: #121215;
+        margin-bottom: 1.5rem;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>DevOps and Automation Tools</h1>
+
+    <p>
+      DevOps combines cultural philosophies, practices, and tools to accelerate application delivery and automate infrastructure management throughout the software development lifecycle. By treating infrastructure as code, teams achieve consistent, testable, and repeatable environments.
+    </p>
+
+    <p>
+      Related application runtimes:
+      <a href="#" class="wiki-link" data-wikilink="Java/Java_Platform" data-relation="references">Java Platform Architecture</a> and
+      <a href="#" class="wiki-link" data-wikilink="Java/Spring_Boot_3" data-relation="references">Spring Boot 3 Reference</a>.
+    </p>
+
+    <h2>Overview of Core Concepts</h2>
+    <p>
+      A mature DevOps pipeline organizes responsibilities into distinct phases: provisioning resources, configuring systems, deploying software, and monitoring health.
+    </p>
+
+    <div class="card">
+      <h3>1. Terraform (Infrastructure Provisioning)</h3>
+      <p><strong>Primary Role:</strong> Orchestration and declarative Infrastructure as Code (IaC).</p>
+      <p><strong>How it works:</strong></p>
+      <ul>
+        <li>Uses HashiCorp Configuration Language (HCL) to declare desired infrastructure states.</li>
+        <li>Connects to cloud and infrastructure APIs through modular providers (AWS, Azure, GCP, Kubernetes).</li>
+        <li>Maintains a state file (<code>terraform.tfstate</code>) that records real-world resources mapped to configuration definitions.</li>
+        <li>Executes via a standard lifecycle: <code>terraform init</code> (downloads providers), <code>terraform plan</code> (determines state differences), and <code>terraform apply</code> (executes API calls to achieve target state).</li>
+      </ul>
+      <p><strong>Primary Use Cases:</strong> Creating and managing cloud networks, compute instances, load balancers, DNS records, and managed databases.</p>
+    </div>
+
+    <div class="card">
+      <h3>2. Ansible (Configuration Management &amp; Orchestration)</h3>
+      <p><strong>Primary Role:</strong> Agentless configuration management, application deployment, and task execution.</p>
+      <p><strong>How it works:</strong></p>
+      <ul>
+        <li>Operates without a background agent on target nodes, communicating over standard protocols (SSH for Linux, WinRM for Windows).</li>
+        <li>Defines automation tasks in human-readable YAML files known as Playbooks.</li>
+        <li>Uses a push-based execution architecture, executing modules on remote nodes and removing temporary scripts upon completion.</li>
+        <li>Enforces idempotency, ensuring that tasks only modify systems if the current state differs from the specified target state.</li>
+      </ul>
+      <p><strong>Primary Use Cases:</strong> Installing packages, updating system configurations, rolling out software updates, and ad-hoc orchestration.</p>
+    </div>
+
+    <div class="card">
+      <h3>3. Puppet (Configuration Management &amp; Compliance)</h3>
+      <p><strong>Primary Role:</strong> Agent-based configuration management and continuous state enforcement.</p>
+      <p><strong>How it works:</strong></p>
+      <ul>
+        <li>Follows a client-server (Puppet Primary server and target Puppet Agents) pull model.</li>
+        <li>Configurations are written in Puppet DSL (Domain-Specific Language) using declarative resource manifests.</li>
+        <li>The agent gathers system facts using <code>Facter</code> and sends them to the primary server.</li>
+        <li>The server compiles a machine-specific catalog representing the target state, which the agent applies.</li>
+        <li>Runs periodically (default every 30 minutes) to detect and remediate configuration drift automatically.</li>
+      </ul>
+      <p><strong>Primary Use Cases:</strong> Long-term drift prevention, enterprise security baselining, and managing configurations across large fleet environments.</p>
+    </div>
+
+    <div class="card">
+      <h3>4. Nagios (Infrastructure &amp; Service Monitoring)</h3>
+      <p><strong>Primary Role:</strong> Centralized health monitoring, incident detection, and alerting.</p>
+      <p><strong>How it works:</strong></p>
+      <ul>
+        <li>Runs as a central server daemon that executes scheduled active and passive health checks.</li>
+        <li>Relies on modular check plugins (e.g., <code>check_ping</code>, <code>check_http</code>, <code>check_disk</code>).</li>
+        <li>Queries remote machines using agents like NRPE (Nagios Remote Plugin Executor) or standard protocols like SNMP and SSH.</li>
+        <li>Evaluates return codes (0: OK, 1: WARNING, 2: CRITICAL, 3: UNKNOWN) against defined thresholds.</li>
+        <li>Triggers notifications via email, SMS, or webhook integrations when status thresholds fail, escalating issues according to contact policies.</li>
+      </ul>
+      <p><strong>Primary Use Cases:</strong> Tracking host availability, server resource utilization (CPU, memory, disk), service uptime (HTTP, SSH, MySQL), and network device status.</p>
+    </div>
+
+    <h2>Comparison Matrix</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Tool</th>
+          <th>Domain</th>
+          <th>Architecture</th>
+          <th>Model</th>
+          <th>Definition Language</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Terraform</strong></td>
+          <td>Infrastructure Provisioning</td>
+          <td>Client CLI / Providers</td>
+          <td>Push (API calls)</td>
+          <td>HCL (Declarative)</td>
+        </tr>
+        <tr>
+          <td><strong>Ansible</strong></td>
+          <td>Config Management &amp; Deployment</td>
+          <td>Agentless (Control Node)</td>
+          <td>Push (SSH / WinRM)</td>
+          <td>YAML (Declarative / Procedural)</td>
+        </tr>
+        <tr>
+          <td><strong>Puppet</strong></td>
+          <td>Config Management &amp; Drift Control</td>
+          <td>Agent / Server</td>
+          <td>Pull (Periodic catalog fetch)</td>
+          <td>Puppet DSL (Declarative)</td>
+        </tr>
+        <tr>
+          <td><strong>Nagios</strong></td>
+          <td>Infrastructure Monitoring</td>
+          <td>Server / Remote Plugins (NRPE)</td>
+          <td>Pull / Push (Poll &amp; Trap)</td>
+          <td>Config text files (Directives)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>How the Tools Work Together in a Workflow</h2>
+    <ol>
+      <li><strong>Provision:</strong> Terraform creates the virtual servers, networking routes, and storage buckets.</li>
+      <li><strong>Configure:</strong> Ansible or Puppet bootstraps the operating systems, installs dependencies, applies security hardening, and deploys application services.</li>
+      <li><strong>Maintain:</strong> Puppet continuously prevents configuration drift over the server lifecycle.</li>
+      <li><strong>Monitor:</strong> Nagios verifies that host resources, network ports, and HTTP endpoints remain healthy and alerts operators upon failure.</li>
+    </ol>
+  </body>
+</html>

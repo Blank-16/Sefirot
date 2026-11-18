@@ -2,7 +2,6 @@
 
 A local-first personal knowledge archive with an integrated CLI terminal, a navigable knowledge graph, SQLite FTS5 search, document history, and optional local semantic search. The vault's `.html` files are the source of truth. SQLite is a rebuildable index and cache.
 
-
 ### Scientific authoring
 
 SEFIROT supports source-first scientific documents in the existing vault: research-paper, literature-review, mathematical-notes, and lab-report templates; a searchable TeX symbol palette; inline/display equations; AMS equation numbering and references; local custom macros; and MathJax rendering in the isolated preview. See [Scientific Authoring](docs/SCIENTIFIC_AUTHORING.md) for supported syntax and current limitations.
@@ -55,9 +54,9 @@ Run Go commands from `backend/` (or use the root `Makefile`). Frontend build com
 - Three deterministic summary levels (short graph label, medium note summary, and detailed Archive Context), extracted heading outline, and document metadata parsed from HTML `<meta>` tags:
 
   ```html
-  <meta name="description" content="A concise summary of this document.">
-  <meta name="vault:type" content="concept">
-  <meta name="vault:tags" content="systems, architecture">
+  <meta name="description" content="A concise summary of this document." />
+  <meta name="vault:type" content="concept" />
+  <meta name="vault:tags" content="systems, architecture" />
   ```
 
 - Wiki-links via `[[Note Name]]` or HTML anchors with `data-wikilink`.
@@ -68,6 +67,7 @@ Run Go commands from `backend/` (or use the root `Makefile`). Frontend build com
   ```
 
   Supported examples: `related-to`, `depends-on`, `implements`, `extends`, `contradicts`, `references`, and `parent-of`.
+
 - Global and local graph modes, search, pan, zoom, draggable nodes, relationship styling, summaries, and tags.
 - Home dashboard, recently updated notes, multiple document tabs, command palette (`Ctrl/Cmd + P`), quick switcher (`Ctrl/Cmd + O`), and global search (`Ctrl/Cmd + K`).
 - Document version history and restore from the right-hand properties panel. Optimistic content-hash checks detect edits made by external agents and prevent silent overwrite; the user can reload or explicitly overwrite.
@@ -150,42 +150,42 @@ curl -s http://127.0.0.1:8080/api/semantic/status
 
 ## API additions
 
-| Endpoint | Purpose |
-|---|---|
-| `GET /api/graph` | Graph nodes and typed edges |
-| `GET /api/research` | List research records |
-| `POST /api/research` | Create a research record |
-| `GET /api/research/{id}` | Read paper metadata, citations and annotations |
-| `PUT /api/research/{id}` | Update paper metadata |
-| `DELETE /api/research/{id}` | Delete a research record and its dependent records |
-| `POST /api/research/{id}/pdf` | Attach an original PDF (100 MiB maximum) |
-| `GET/POST /api/research/{id}/citations` | List or add citation records |
-| `GET/POST /api/research/{id}/annotations` | List or add page annotations |
-| `GET /api/ai/context?path=...` | Compact Archive Context for a document |
-| `GET /api/ai/search?q=...` | Search results with agent instructions |
-| `GET /api/tags` | Tag counts |
-| `GET /api/recent` | Recently updated documents |
-| `GET /api/agents/runs?limit=20` | Recent local CLI agent sessions and exit status |
-| `GET /api/notes/revisions?path=...` | Revision history |
-| `POST /api/notes/restore` | Restore a revision |
-| `GET /api/semantic/status` | Local embedding availability and index progress |
-| `GET /api/semantic/search?q=...` | Local vector search |
-| `GET /api/hybrid/search?q=...` | Combined lexical and semantic search |
-| `GET /api/health` | Index/database health summary |
-| `GET /api/export` | Download a ZIP backup of the vault |
-| `POST /api/import` | Import a ZIP; validated up front, never overwrites, rolls back on failure |
-| `DELETE /api/research/{id}/citations/{cid}` | Remove a citation record |
-| `DELETE /api/research/{id}/annotations/{aid}` | Remove an annotation |
-| `GET /api/trash` | List deleted notes and research files (30-day retention) |
-| `POST /api/trash/restore` | Restore a trashed item; refuses to overwrite, accepts an alternative `path` |
-| `DELETE /api/trash?id=...` | Permanently delete one trashed item |
-| `GET/PUT /api/settings` | Interface preferences stored next to the index (theme, tabs, Research Mode documents, macros) |
-| `GET /api/resolve?target=` | Resolve a wiki-link target by path, file name, title or alias; returns candidates when ambiguous |
-| `POST /api/research/import` | Import BibTeX or RIS (format auto-detected); duplicates are matched by DOI |
-| `GET /api/research/export?format=bibtex\|ris&ids=` | Export references; unedited imports are written back verbatim |
-| `GET /api/research/bibliography?style=apa\|ieee\|plain&ids=` | Formatted reference list |
-| `POST /api/research/lookup-doi` | Fetch metadata from Crossref; refused until DOI lookup is enabled in the research settings |
-| `GET /api/integrity` | Broken links, ambiguous links (same note name in several folders) and unlinked notes |
+| Endpoint                                                     | Purpose                                                                                          |
+| ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
+| `GET /api/graph`                                             | Graph nodes and typed edges                                                                      |
+| `GET /api/research`                                          | List research records                                                                            |
+| `POST /api/research`                                         | Create a research record                                                                         |
+| `GET /api/research/{id}`                                     | Read paper metadata, citations and annotations                                                   |
+| `PUT /api/research/{id}`                                     | Update paper metadata                                                                            |
+| `DELETE /api/research/{id}`                                  | Delete a research record and its dependent records                                               |
+| `POST /api/research/{id}/pdf`                                | Attach an original PDF (100 MiB maximum)                                                         |
+| `GET/POST /api/research/{id}/citations`                      | List or add citation records                                                                     |
+| `GET/POST /api/research/{id}/annotations`                    | List or add page annotations                                                                     |
+| `GET /api/ai/context?path=...`                               | Compact Archive Context for a document                                                           |
+| `GET /api/ai/search?q=...`                                   | Search results with agent instructions                                                           |
+| `GET /api/tags`                                              | Tag counts                                                                                       |
+| `GET /api/recent`                                            | Recently updated documents                                                                       |
+| `GET /api/agents/runs?limit=20`                              | Recent local CLI agent sessions and exit status                                                  |
+| `GET /api/notes/revisions?path=...`                          | Revision history                                                                                 |
+| `POST /api/notes/restore`                                    | Restore a revision                                                                               |
+| `GET /api/semantic/status`                                   | Local embedding availability and index progress                                                  |
+| `GET /api/semantic/search?q=...`                             | Local vector search                                                                              |
+| `GET /api/hybrid/search?q=...`                               | Combined lexical and semantic search                                                             |
+| `GET /api/health`                                            | Index/database health summary                                                                    |
+| `GET /api/export`                                            | Download a ZIP backup of the vault                                                               |
+| `POST /api/import`                                           | Import a ZIP; validated up front, never overwrites, rolls back on failure                        |
+| `DELETE /api/research/{id}/citations/{cid}`                  | Remove a citation record                                                                         |
+| `DELETE /api/research/{id}/annotations/{aid}`                | Remove an annotation                                                                             |
+| `GET /api/trash`                                             | List deleted notes and research files (30-day retention)                                         |
+| `POST /api/trash/restore`                                    | Restore a trashed item; refuses to overwrite, accepts an alternative `path`                      |
+| `DELETE /api/trash?id=...`                                   | Permanently delete one trashed item                                                              |
+| `GET/PUT /api/settings`                                      | Interface preferences stored next to the index (theme, tabs, Research Mode documents, macros)    |
+| `GET /api/resolve?target=`                                   | Resolve a wiki-link target by path, file name, title or alias; returns candidates when ambiguous |
+| `POST /api/research/import`                                  | Import BibTeX or RIS (format auto-detected); duplicates are matched by DOI                       |
+| `GET /api/research/export?format=bibtex\|ris&ids=`           | Export references; unedited imports are written back verbatim                                    |
+| `GET /api/research/bibliography?style=apa\|ieee\|plain&ids=` | Formatted reference list                                                                         |
+| `POST /api/research/lookup-doi`                              | Fetch metadata from Crossref; refused until DOI lookup is enabled in the research settings       |
+| `GET /api/integrity`                                         | Broken links, ambiguous links (same note name in several folders) and unlinked notes             |
 
 ## Notes, links and search
 
@@ -199,6 +199,14 @@ curl -s http://127.0.0.1:8080/api/semantic/status
 Papers carry an origin: entered manually, imported from BibTeX or RIS, or retrieved from Crossref. Imports keep the original record verbatim and show it under "Original record". Editing the bibliographic fields of an imported paper marks it as edited; the original stays available, and unedited imports export byte-for-byte. Citations and annotations carry their own origin (`manual`, `extracted`, `ai`), set by the server, never by a client.
 
 DOI lookup is off by default. When enabled in the research library it sends only the DOI to `api.crossref.org`.
+
+## Terminal
+
+Terminal sessions are owned by the server. Hiding the overlay, closing the tab or reloading the page leaves the session running; reopening the terminal reattaches and replays the last 256 KiB of output. A session with no browser attached is ended after 10 minutes, and "End session" ends it immediately. `GET /api/terminal/sessions` lists live sessions (token required). The WSL profile is offered only on Windows; on Linux, including inside WSL, the default is the plain shell (`$SHELL`, else bash). The xterm.js library is bundled under `/vendor`; if that copy is missing the page loads it from `cdn.jsdelivr.net` and says so in the terminal status line. Both `127.0.0.1` and `localhost` are accepted as the host and origin of the WebSocket.
+
+## Source editor
+
+The source editor has a Wrap toggle (long lines wrap or scroll; the choice is remembered in the browser and in the server settings) and a Format button. Format uses a bundled copy of Prettier, loaded on first use. Math spans (`$...$`, `$$...$$`, `\(...\)`, `\[...\]`) and YAML front matter are set aside before formatting and restored byte for byte; if any span would change, nothing is applied. The result is inserted as one undoable edit, so Ctrl+Z restores the original.
 
 ## One process per data directory
 

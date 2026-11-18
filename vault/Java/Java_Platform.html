@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Java Platform Architecture</title>
+    <meta name="description" content="Technical guide to the Java platform covering JVM architecture, memory management, garbage collection, and modern LTS language capabilities." />
+    <meta name="vault:type" content="concept" />
+    <meta name="vault:tags" content="java, jvm, programming, backend" />
+    <style>
+      body {
+        font: 16px/1.65 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        max-width: 800px;
+        margin: 3rem auto;
+        padding: 0 1.25rem;
+        color: #e4e4e7;
+        background: #09090b;
+      }
+      h1, h2, h3 {
+        color: #fafafa;
+      }
+      a {
+        color: #a5b4fc;
+      }
+      code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 0.9em;
+        background: #18181b;
+        padding: 0.15rem 0.35rem;
+        border-radius: 4px;
+        border: 1px solid #27272a;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1.5rem 0;
+      }
+      th, td {
+        border: 1px solid #27272a;
+        padding: 0.6rem 0.8rem;
+        text-align: left;
+      }
+      th {
+        background: #18181b;
+        color: #fafafa;
+      }
+      .card {
+        border: 1px solid #27272a;
+        border-radius: 8px;
+        padding: 1rem 1.25rem;
+        background: #121215;
+        margin-bottom: 1.5rem;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Java Platform Architecture</h1>
+
+    <p>
+      The Java platform provides a high-performance, object-oriented runtime environment designed around portable bytecode executed by the Java Virtual Machine (JVM). Its layered architecture isolates application logic from host operating systems while maintaining strict type safety and automatic memory management.
+    </p>
+
+    <h2>Related Notes</h2>
+    <p>
+      Parent topic for enterprise Java services:
+      <a href="#" class="wiki-link" data-wikilink="Java/Spring_Boot_3" data-relation="parent-of">Spring Boot 3 Reference</a>.
+      For infrastructure deployment:
+      <a href="#" class="wiki-link" data-wikilink="devops/devops" data-relation="related-to">DevOps and Automation Tools</a>.
+    </p>
+
+    <div class="card">
+      <h3>1. JVM Runtime Structure</h3>
+      <ul>
+        <li><strong>Classloader Subsystem:</strong> Loads, links, and initializes bytecode files (<code>.class</code>) through delegation hierarchies (Bootstrap, Extension/Platform, Application).</li>
+        <li><strong>JVM Memory Layout:</strong>
+          <ul>
+            <li><em>Heap:</em> Shared storage for all instantiated objects and instance variables; managed by the Garbage Collector.</li>
+            <li><em>Metaspace:</em> Off-heap native memory storing class metadata, method descriptors, and constant pools.</li>
+            <li><em>JVM Stacks:</em> Thread-confined frames storing primitive local variables, object references, and partial method call results.</li>
+            <li><em>Program Counter (PC) Registers:</em> Contains the address of the JVM instruction currently being executed per thread.</li>
+          </ul>
+        </li>
+        <li><strong>Execution Engine:</strong> Combines bytecode interpretation with Just-In-Time (JIT) compilation (C1 client compiler for quick startup, C2 server compiler for peak performance profile optimization).</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>2. Garbage Collection &amp; Memory Management</h3>
+      <ul>
+        <li><strong>Generational Hypothesis:</strong> Most objects become unreachable shortly after allocation; memory is partitioned into Young (Eden, Survivor spaces) and Tenured (Old) generations.</li>
+        <li><strong>G1 GC (Garbage-First):</strong> Default general-purpose collector. Divides heap into uniform regions; collects regions with the highest amount of garbage first within a target pause time.</li>
+        <li><strong>ZGC (Z Garbage Collector):</strong> Ultra-low latency collector with pause times consistently below 1 millisecond regardless of heap size, utilizing colored pointers and load barriers.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>3. Modern Language Features (Java 17 &amp; 21 LTS)</h3>
+      <ul>
+        <li><strong>Records:</strong> Immutable, compact data carrier classes with compiler-generated accessors, <code>equals()</code>, <code>hashCode()</code>, and <code>toString()</code>.</li>
+        <li><strong>Pattern Matching:</strong> Enhanced <code>instanceof</code> and pattern-matching <code>switch</code> expressions eliminating explicit type casting.</li>
+        <li><strong>Sealed Classes:</strong> Explicit control over inheritance by declaring permitted subclasses via <code>sealed ... permits</code>.</li>
+        <li><strong>Virtual Threads (Project Loom):</strong> Lightweight threads managed directly by the JVM runtime rather than 1:1 OS kernel threads, scaling concurrent throughput for I/O-bound applications.</li>
+      </ul>
+    </div>
+
+    <h2>Build &amp; Packaging Workflow</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Tool / Target</th>
+          <th>Type</th>
+          <th>Primary Output</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Maven / Gradle</strong></td>
+          <td>Build Tool</td>
+          <td>Target directory</td>
+          <td>Manages dependencies, lifecycle phases (compile, test, package), and plugins.</td>
+        </tr>
+        <tr>
+          <td><strong>Fat / Uber JAR</strong></td>
+          <td>Archive</td>
+          <td><code>.jar</code> file</td>
+          <td>Bundles application bytecode alongside all transitive dependencies into an executable archive.</td>
+        </tr>
+        <tr>
+          <td><strong>JLink</strong></td>
+          <td>JDK Linker</td>
+          <td>Custom JRE runtime</td>
+          <td>Assembles minimal custom runtimes containing only the specific JDK modules required.</td>
+        </tr>
+      </tbody>
+    </table>
+  </body>
+</html>

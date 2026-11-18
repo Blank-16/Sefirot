@@ -4,22 +4,16 @@ Ordered by user impact and risk. Each item states the problem, the design, the f
 
 ## 0. Prerequisites that block verification (do first)
 
-| Item | Action | Effort |
-|---|---|---|
-| `go.sum` | Run `go mod tidy` in `backend/` on a networked machine and commit `go.sum`. CI already warns while it is missing. | S |
-| `modernc.org/sqlite` | Let CI run the full suite in module mode. Local runs so far used `mattn/go-sqlite3` behind a shim. Confirm `VACUUM INTO` (migration backups) and FTS5 behave identically. | S |
-| Desktop | Build the Tauri sidecar on all three OS families; confirm `--port 0`, ready file, token handshake, shutdown, and that the new instance lock releases on quit and on crash (stale after 20 s). | M |
-| Windows | Test `Root.Rename` over a file the watcher has open (retry loop exists, untested); test the instance lock across a Windows build and a WSL build sharing one folder. | M |
+| Item                 | Action                                                                                                                                                                                        | Effort |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| `go.sum`             | Run `go mod tidy` in `backend/` on a networked machine and commit `go.sum`. CI already warns while it is missing.                                                                             | S      |
+| `modernc.org/sqlite` | Let CI run the full suite in module mode. Local runs so far used `mattn/go-sqlite3` behind a shim. Confirm `VACUUM INTO` (migration backups) and FTS5 behave identically.                     | S      |
+| Desktop              | Build the Tauri sidecar on all three OS families; confirm `--port 0`, ready file, token handshake, shutdown, and that the new instance lock releases on quit and on crash (stale after 20 s). | M      |
+| Windows              | Test `Root.Rename` over a file the watcher has open (retry loop exists, untested); test the instance lock across a Windows build and a WSL build sharing one folder.                          | M      |
 
-## 1. Terminal sessions survive reload (P1, M)
+## 1. Terminal sessions survive reload (done)
 
-Problem: closing the WebSocket kills the process (`terminal.go`), so a page reload ends an agent run.
-
-Design: a session is owned by the server, not the socket. Keep a ring buffer (256 KiB) of output per session. On WebSocket close, mark the session detached and start a 10-minute idle timer instead of killing it. `GET /api/terminal/sessions` lists live sessions; the socket endpoint accepts `?session=<id>` to reattach and replays the buffer first. The frontend stores the session id in `sessionStorage` and reattaches on load. "End session" remains the explicit kill.
-
-Files: `terminal.go`, `web/js/terminal.js`, `index.html` (reattach indicator).
-Verify: Go test with a fake PTY that detaches, reattaches and sees replayed output; browser check that a reload keeps `Connected`.
-Risk: orphaned processes if the app is killed; mitigate by killing all sessions on shutdown and on instance-lock loss.
+Implemented: server-owned sessions, 256 KiB replay buffer, takeover by a reloaded page, 10-minute idle timeout, session list endpoint. Remaining: Windows ConPTY and macOS verification, and a visible "running sessions" list in the UI when more than one exists.
 
 ## 2. Wiki-link and note-identity polish (P1, S)
 
@@ -32,12 +26,13 @@ Verify: handler test for rewrite and revision snapshot; browser check.
 Problem: annotations are manual page and quote strings, and nothing distinguishes source text from interpretation beyond the new `origin` field.
 
 Design:
+
 1. Add `claims` and `evidence` tables (vault-backed in `record.json`): a claim has text, status (proposed, supported, contradicted, retracted) and an `origin`; evidence links a claim to a paper, page, annotation or equation with a quoted span and a confidence field set only by the user.
 2. Equation records: LaTeX source, `origin` (typed, extracted, ocr), `ocr_confidence`, page and bounding box, and a `corrected_from` field holding the untouched original whenever a user edits it. Nothing is ever rewritten in place.
 3. Cross-reference syntax `[@key]` for citations and `[[eq:name]]` for equations in Markdown, resolved at render time; unresolved keys are reported by `/api/integrity`.
-Files: `internal/database/research.go`, `migrate.go` (versions 4 and 5), `research_store.go`, `web/js/research.js`.
-Verify: migration test from v3, record round-trip, integrity cases for dangling keys.
-Depends on: item 4 for page coordinates.
+   Files: `internal/database/research.go`, `migrate.go` (versions 4 and 5), `research_store.go`, `web/js/research.js`.
+   Verify: migration test from v3, record round-trip, integrity cases for dangling keys.
+   Depends on: item 4 for page coordinates.
 
 ## 4. In-app PDF reader with visual annotations (P2, L)
 
@@ -88,16 +83,15 @@ Verify: screenshot diff on the 16 existing captures; target zero `!important` ou
 
 ## 10. Remaining smaller items
 
-| Item | Fix | Effort |
-|---|---|---|
-| Research id collisions on import | Remap ids on import: assign new ids, rewrite `record.json`, rename the directory, rebase `cited_paper_id` | S |
-| Research Mode is lost when a note is deleted and restored | Store the flag in the note (`<meta name="vault:mode">` or front matter `mode: research`) so it travels with the file | S |
-| Summaries repeat the title and show raw TeX | Strip the leading heading and math spans before summarising | S |
-| `Ctrl+O` duplicates `Ctrl+K` | Make it a recent-notes switcher | S |
-| xterm CDN fallback in `index.html` | Remove the remote fallback; fail with a clear message if vendored assets are missing | S |
-| Large vaults | Measure indexing and tree time at 10 000 notes; virtualise the sidebar tree if the DOM cost shows | M |
-| LaTeX project import and export (`.tex` + `.bib`) | Export a research note and its bibliography as a `.tex` project; optional Tectonic compile behind a setting | M |
-| Citation styles | Add Chicago and Vancouver; load CSL styles from the vault if present | M |
+| Item                                                      | Fix                                                                                                                  | Effort |
+| --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- | ------ |
+| Research id collisions on import                          | Remap ids on import: assign new ids, rewrite `record.json`, rename the directory, rebase `cited_paper_id`            | S      |
+| Research Mode is lost when a note is deleted and restored | Store the flag in the note (`<meta name="vault:mode">` or front matter `mode: research`) so it travels with the file | S      |
+| Summaries repeat the title and show raw TeX               | Strip the leading heading and math spans before summarising                                                          | S      |
+| `Ctrl+O` duplicates `Ctrl+K`                              | Make it a recent-notes switcher                                                                                      | S      |
+| Large vaults                                              | Measure indexing and tree time at 10 000 notes; virtualise the sidebar tree if the DOM cost shows                    | M      |
+| LaTeX project import and export (`.tex` + `.bib`)         | Export a research note and its bibliography as a `.tex` project; optional Tectonic compile behind a setting          | M      |
+| Citation styles                                           | Add Chicago and Vancouver; load CSL styles from the vault if present                                                 | M      |
 
 ## Suggested order
 

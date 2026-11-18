@@ -10,15 +10,15 @@ The visual language takes cues from archival indexes, field notebooks and resear
 
 ## Colour tokens
 
-| Token | Light | Dark | Purpose |
-|---|---|---|---|
-| Paper | `#F0EEE5` | `#000000` | Application background |
-| Reading surface | `#FAF9F3` | `#090B09` | Document and modal surfaces |
-| Paper low | `#E8E6DC` | `#070907` | Secondary panel |
-| Carbon ink | `#20251F` | `#E9E8DF` | Primary text |
-| Index grey | `#77796E` | `#A09F93` | Secondary text |
-| Aged brass | `#A88E52` | `#B69B5B` | Selection, focus and research state |
-| Moss | `#526356` | `#9CAB91` | Secondary active state |
+| Token           | Light     | Dark      | Purpose                             |
+| --------------- | --------- | --------- | ----------------------------------- |
+| Paper           | `#F0EEE5` | `#000000` | Application background              |
+| Reading surface | `#FAF9F3` | `#090B09` | Document and modal surfaces         |
+| Paper low       | `#E8E6DC` | `#070907` | Secondary panel                     |
+| Carbon ink      | `#20251F` | `#E9E8DF` | Primary text                        |
+| Index grey      | `#77796E` | `#A09F93` | Secondary text                      |
+| Aged brass      | `#A88E52` | `#B69B5B` | Selection, focus and research state |
+| Moss            | `#526356` | `#9CAB91` | Secondary active state              |
 
 Dark mode retains a pure-black application background. Accent colour is reserved for meaningful selection and state.
 
