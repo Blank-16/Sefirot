@@ -1,6 +1,8 @@
 /index.db
+/index.db*
 /index.db-shm
 /index.db-wal
+*.bak
 /sefirot
 /sefirot.exe
 /backend/backend

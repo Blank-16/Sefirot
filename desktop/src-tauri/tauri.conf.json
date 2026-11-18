@@ -27,9 +27,7 @@
   "bundle": {
     "active": true,
     "targets": "all",
-    "externalBin": [
-      "binaries/sefirot-server"
-    ],
+    "externalBin": ["binaries/sefirot-server"],
     "category": "Productivity",
     "shortDescription": "A local-first personal knowledge archive",
     "icon": [

@@ -109,8 +109,60 @@ def main():
       page.wait_for_timeout(400)
       r=page.evaluate("fetch('/api/resolve?target=QM').then(r=>r.json())")
       check('alias resolves through API', r['path']=='deep/folder/2024-qm.html', r)
+      # ui fixes
+      page.evaluate("setTheme('dark')")
+      page.keyboard.press('Control+k'); page.fill('#searchInput','Math'); page.keyboard.press('Escape')
+      page.keyboard.press('Control+k'); page.wait_for_selector('#searchInput', state='visible')
+      sel=page.evaluate("(()=>{const i=document.querySelector('#searchInput');return [i.selectionStart,i.selectionEnd,i.value.length]})()")
+      check('search reopens without highlighting the old text', sel[0]==sel[1], sel)
+      outline=page.evaluate("getComputedStyle(document.querySelector('#searchInput')).outlineStyle")
+      check('search input has no outline', outline=='none', outline)
+      page.fill('#searchInput','Math'); page.wait_for_selector('.search-result mark')
+      markbg=page.evaluate("getComputedStyle(document.querySelector('.search-result mark')).backgroundColor")
+      import re as _re
+      slash=_re.search(r'/\s*([\d.]+)\)', markbg)
+      parts=_re.findall(r'[\d.]+', markbg)
+      alpha=float(slash.group(1)) if slash else (float(parts[3]) if len(parts)>=4 and markbg.startswith('rgba') else 1.0)
+      check('search highlight is subtle', alpha<0.4, markbg)
+      page.keyboard.press('Escape')
+      geo=page.evaluate("(()=>{const s=document.querySelector('.tool-menu > summary'),m=document.querySelector('.tool-menu-mark');const a=s.getBoundingClientRect(),b=m.getBoundingClientRect();const r=document.createRange();r.selectNodeContents(s.firstChild.nodeType===3?s.firstChild:s.querySelector('span'));const t=r.getBoundingClientRect();return {summary:getComputedStyle(s).display,markDisplay:getComputedStyle(m).display,dy:Math.abs((b.top+b.height/2)-(a.top+a.height/2))}})()")
+      check('tools chevron is centred in the button', geo['summary']=='inline-flex' and geo['markDisplay'] in ('flex','inline-flex') and geo['dy']<=2.5, geo)
+      page.evaluate("openNote('Casual/Prices.html')"); page.wait_for_timeout(700)
+      page.click('#researchModeToggle') if page.locator('#researchModeToggle').get_attribute('aria-pressed')!='true' else None
+      page.wait_for_selector('#documentTemplate', state='visible')
+      sel_style=page.evaluate("(()=>{const s=document.querySelector('#documentTemplate');const o=s.querySelector('option');return [getComputedStyle(s).backgroundColor,getComputedStyle(o).backgroundColor,getComputedStyle(s).color]})()")
+      check('dark template dropdown uses the dark surface', all(c.startswith('rgb(') and int(c[4:].split(',')[0])<60 for c in sel_style[:2]), sel_style)
+      # wrap
+      wrap0=page.evaluate("getComputedStyle(document.querySelector('#editor')).whiteSpace")
+      page.click('#editorWrapToggle')
+      wrap1=page.evaluate("getComputedStyle(document.querySelector('#editor')).whiteSpace")
+      check('wrap toggle switches pre-wrap and pre', wrap0=='pre-wrap' and wrap1=='pre', (wrap0,wrap1))
+      check('wrap preference persisted', page.evaluate("localStorage.getItem('sefirot-editor-wrap')")=='off')
+      page.wait_for_timeout(900)
+      srv=page.evaluate("fetch('/api/settings').then(r=>r.json())")
+      check('wrap preference stored on server', srv.get('editorNoWrap') is True, srv)
+      page.click('#editorWrapToggle')
+      # format
+      messy="---\naliases: [QM]\n---\n#  Messy   title\n*  one\n*  two\n\nInline $x_1 * y_2$ and \\(a_b\\) end.\n\n$$\n\\sum_{i=1}^n a_i * b_i\n$$\n\n|a|b|\n|-|-|\n|1|2|\n"
+      page.fill('#editor', messy)
+      page.click('#editorFormat'); page.wait_for_function("document.querySelector('#editor').value.includes('# Messy title')", timeout=8000)
+      out=page.input_value('#editor')
+      check('format cleans Markdown structure', '- one' in out and '| a   | b   |' in out, out[:120])
+      check('format leaves math byte for byte', all(m in out for m in ['$x_1 * y_2$','\\(a_b\\)','\\sum_{i=1}^n a_i * b_i']), out)
+      check('format keeps front matter', out.startswith('---\naliases: [QM]\n---'), out[:30])
+      page.click('#editor'); page.keyboard.press('Control+z'); page.wait_for_timeout(200)
+      check('format can be undone with Ctrl+Z', page.input_value('#editor')==messy, page.input_value('#editor')[:60])
+      # light theme preview of a standalone document
+      page.evaluate("setTheme('light')"); page.evaluate("openNote('welcome.html')"); page.wait_for_timeout(1200)
+      fr=[f for f in page.frames if f!=page.main_frame][0]
+      colors=fr.evaluate("[getComputedStyle(document.body).backgroundColor,getComputedStyle(document.body).color,getComputedStyle(document.querySelector('.demo')).backgroundColor]")
+      check('standalone document follows the light theme', colors[0]=='rgb(250, 249, 243)' and colors[1]=='rgb(32, 37, 31)' and colors[2]=='rgb(240, 238, 229)', colors)
+      page.screenshot(path=SHOTS+'/welcome-light.png')
+      page.evaluate("setTheme('dark')")
+      page.evaluate("openNote('Casual/Prices.html')"); page.wait_for_timeout(500)
       # terminal hide keeps session
       page.click('.tool-menu summary'); page.click('#terminalOpen'); page.wait_for_timeout(600)
+      check('wsl profile is not offered on Linux', page.locator('#terminalProfile option[value=wsl]').count()==0)
       page.select_option('#terminalProfile','shell'); page.click('#terminalStart')
       try:
           page.wait_for_function("document.querySelector('#terminalStatus').textContent==='Connected'", timeout=6000)
@@ -121,6 +173,16 @@ def main():
       check('backdrop click hides overlay', not page.locator('#terminalOverlay').is_visible())
       check('backdrop click keeps session connected', page.inner_text('#terminalStatus')=='Connected', page.inner_text('#terminalStatus'))
       page.click('.tool-menu summary'); page.click('#terminalOpen'); page.wait_for_timeout(300)
+      page.click('#terminalOutput'); page.keyboard.type('echo RELOAD$((6*7))'); page.keyboard.press('Enter'); page.wait_for_timeout(700)
+      page.mouse.click(5,5)
+      page.reload(); page.wait_for_selector('#homeView:not(.hidden)'); page.wait_for_timeout(800)
+      page.click('.tool-menu summary'); page.click('#terminalOpen')
+      try:
+          page.wait_for_function("document.querySelector('#terminalStatus').textContent.startsWith('Reconnected')", timeout=8000)
+      except Exception: pass
+      check('terminal reattaches after a page reload', page.inner_text('#terminalStatus').startswith('Reconnected'), page.inner_text('#terminalStatus'))
+      page.wait_for_timeout(600)
+      check('earlier terminal output is replayed', 'RELOAD42' in page.inner_text('#terminalOutput'), page.inner_text('#terminalOutput')[:200])
       page.click('#terminalStop'); page.wait_for_timeout(600)
       # screenshots: sizes x themes
       for theme in ['dark','light']:
